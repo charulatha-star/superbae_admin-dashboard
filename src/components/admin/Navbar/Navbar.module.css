@@ -1,0 +1,244 @@
+/* ─── Navbar — Pink Theme ──────────────────────────────────────────────── */
+.navbar {
+    height: 64px;
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    position: sticky;
+    top: 0;
+    z-index: 30;
+}
+
+.left,
+.right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.iconBtn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, color 0.2s;
+    position: relative;
+}
+
+.iconBtn:hover {
+    background-color: var(--primary-very-light);
+    color: var(--primary);
+}
+
+.pageTitle {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background-color: var(--primary);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.relative {
+    position: relative;
+}
+
+.profileBtn {
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.profileBtn:hover {
+    background-color: var(--primary-very-light);
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 8px rgba(232, 62, 140, 0.3);
+}
+
+.profileInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.profileName {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.profileRole {
+    font-size: 0.75rem;
+    color: var(--primary);
+    text-transform: capitalize;
+    font-weight: 500;
+}
+
+.arrow {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    margin-left: 4px;
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background-color: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px -5px rgba(232, 62, 140, 0.12), 0 4px 10px -3px rgba(0, 0, 0, 0.08);
+    width: 300px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+}
+
+.dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.profileDropdown {
+    width: 220px;
+}
+
+.dropdownHeader {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.dropdownHeader small {
+    font-weight: 400;
+    color: var(--text-secondary);
+}
+
+.dropdownItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.875rem;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.dropdownItem:hover {
+    background-color: var(--primary-very-light);
+    color: var(--primary);
+}
+
+.divider {
+    height: 1px;
+    background-color: var(--border);
+    margin: 4px 0;
+}
+
+.notificationList {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.notificationItem {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-light);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.notificationItem:hover {
+    background-color: var(--primary-very-light);
+}
+
+.notificationItem:last-child {
+    border-bottom: none;
+}
+
+.notificationText {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.notificationTime {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.dropdownFooter {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--primary);
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 0 0 12px 12px;
+    transition: background-color 0.2s;
+}
+
+.dropdownFooter:hover {
+    background-color: var(--primary-very-light);
+}
+
+@media (max-width: 768px) {
+    .pageTitle {
+        display: none;
+    }
+
+    .profileInfo {
+        display: none;
+    }
+}

@@ -1,0 +1,603 @@
+/* ─── User View additional sections — Pink Theme ───────────────────────── */
+.sectionTitleRow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1.5px solid var(--border);
+    padding-bottom: 10px;
+    margin-bottom: 16px;
+}
+
+.sectionDesc {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 6px 0 0;
+}
+
+/* ── Activity stats tiles ──────────────────────────────────────────────── */
+.statTiles {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.statTile {
+    background-color: var(--primary-very-light);
+    border: 1px solid rgba(232, 62, 140, 0.12);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.statIcon {
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+.statTileValue {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.statTileLabel {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-top: 4px;
+}
+
+/* ── Activity list ─────────────────────────────────────────────────────── */
+.activityList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.activityItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.activityItem:last-child {
+    border-bottom: none;
+}
+
+.activityDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--primary);
+    margin-top: 5px;
+    flex-shrink: 0;
+}
+
+.activityBody {
+    flex: 1;
+}
+
+.activityAction {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.activityDetail {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.activityTime {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+/* ── Activity panel tables ────────────────────────────────────────────── */
+.actSectionHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.actSectionHead .subBlockLabel {
+    margin-bottom: 0;
+}
+
+.actCount {
+    background: var(--primary-very-light);
+    border: 1px solid rgba(232, 62, 140, 0.15);
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 9999px;
+    padding: 2px 10px;
+    white-space: nowrap;
+}
+
+.actionText {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.actTimeCell {
+    white-space: nowrap;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.typePill {
+    background-color: var(--border-light);
+    color: var(--text-secondary);
+    text-transform: capitalize;
+}
+
+.trackerPill {
+    background-color: var(--primary-very-light);
+    color: var(--primary);
+    text-transform: capitalize;
+}
+
+.moodPill {
+    background-color: var(--success-light);
+    color: var(--success-text);
+    text-transform: capitalize;
+}
+
+.journalTitle {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.journalContent {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.tagWrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.tagPill {
+    background-color: var(--border-light);
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    text-transform: capitalize;
+}
+
+.usageCount {
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* ── Subscription card ─────────────────────────────────────────────────── */
+.subCard {
+    background-color: var(--primary-very-light);
+    border: 1px solid rgba(232, 62, 140, 0.15);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.subPlan {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.subIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.subPlanName {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-transform: capitalize;
+    letter-spacing: -0.01em;
+}
+
+.subMeta {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.subDetails {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 28px;
+}
+
+.subField {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.subFieldLabel {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.subFieldValue {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* ── Devices / sessions ────────────────────────────────────────────────── */
+.deviceList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.deviceItem {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    background-color: #fff;
+}
+
+.deviceIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background-color: var(--primary-very-light);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.deviceInfo {
+    flex: 1;
+}
+
+.deviceName {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.deviceMeta {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.deviceBadge {
+    padding: 3px 10px;
+    border-radius: 9999px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    background-color: var(--success-light);
+    color: var(--success-text);
+}
+
+/* ── Tables (login history) ────────────────────────────────────────────── */
+.dataTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.dataTable th,
+.dataTable td {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.dataTable th {
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.72rem;
+    white-space: nowrap;
+}
+
+.dataTable td {
+    color: var(--text-primary);
+}
+
+/* ── Key-value tab tables ──────────────────────────────────────────────── */
+.tableCard {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #ffffff;
+}
+
+.tabTableLabel {
+    width: 30%;
+    font-weight: 600;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    vertical-align: top;
+    text-transform: capitalize;
+}
+
+.nestedTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.nestedTable th,
+.nestedTable td {
+    text-align: left;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: top;
+}
+
+.nestedTable tr:last-child th,
+.nestedTable tr:last-child td {
+    border-bottom: none;
+}
+
+.statusPill {
+    padding: 3px 10px;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.statusPill.success,
+.statusPill.active {
+    background-color: var(--success-light);
+    color: var(--success-text);
+}
+
+.statusPill.error,
+.statusPill.failed {
+    background-color: var(--error-light);
+    color: var(--error-text);
+}
+
+.statusPill.warning {
+    background-color: var(--warning-light);
+    color: var(--warning-text);
+}
+
+.statusPill.muted,
+.statusPill.unknown {
+    background-color: var(--border-light);
+    color: var(--text-secondary);
+}
+
+/* ── Empty / loading states ────────────────────────────────────────────── */
+.emptyNote,
+.loadingNote {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    padding: 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ── Nested tab data (objects / arrays) ───────────────────────────────── */
+.tabStack {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.tabBlock {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    background-color: var(--primary-very-light);
+}
+
+.progressTrack {
+    height: 10px;
+    border-radius: 9999px;
+    background-color: var(--border-light);
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    transition: width 0.3s ease;
+}
+
+.progressLabel {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.subBlock {
+    grid-column: 1 / -1;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    background-color: var(--primary-very-light);
+    margin-top: 2px;
+}
+
+.subBlockLabel {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+}
+
+.subList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.subCard {
+    background-color: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.subCard > .grid {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.subRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    padding: 6px 0;
+}
+
+.bullet {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--primary);
+    flex-shrink: 0;
+}
+
+/* ── Danger zone / account actions ─────────────────────────────────────── */
+.dangerZone {
+    background-color: #ffffff;
+    border-radius: 14px;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    padding: 24px;
+}
+
+.dangerTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--error);
+    margin: 0 0 6px;
+}
+
+.dangerDesc {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin: 0 0 18px;
+}
+
+.accountActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.actionBtn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.actionBtn.activate {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.25);
+}
+
+.actionBtn.activate:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35);
+}
+
+.actionBtn.suspend {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.25);
+}
+
+.actionBtn.suspend:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+}
+
+.actionBtn.block {
+    background: linear-gradient(135deg, var(--error) 0%, #DC2626 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+}
+
+.actionBtn.block:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+}
+
+@media (max-width: 768px) {
+    .statTiles {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .statTiles {
+        grid-template-columns: 1fr;
+    }
+}

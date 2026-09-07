@@ -1,0 +1,92 @@
+/* ─── Tabs — Pink Theme ─────────────────────────────────────────────────── */
+.tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.tabBar {
+    display: flex;
+    align-items: stretch;
+    gap: 6px;
+    padding: 6px;
+    background-color: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) transparent;
+}
+
+.tabBar::-webkit-scrollbar {
+    height: 6px;
+}
+
+.tabBar::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 9999px;
+}
+
+.tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: none;
+    background: none;
+    border-radius: 9px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: all 0.18s ease;
+}
+
+.tab:hover {
+    background-color: var(--hover-bg);
+    color: var(--text-primary);
+}
+
+.tabActive,
+.tabActive:hover {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(232, 62, 140, 0.25);
+}
+
+.tabIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tabBadge {
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9999px;
+    background-color: var(--primary);
+    color: #ffffff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tabActive .tabBadge {
+    background-color: #ffffff;
+    color: var(--primary);
+}
+
+.panel {
+    background-color: #ffffff;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    padding: 22px;
+}

@@ -1,0 +1,235 @@
+/* ─── Sidebar — Pink Theme ─────────────────────────────────────────────── */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    background-color: #ffffff;
+    border-right: 1px solid var(--border);
+    transition: width 0.3s ease, transform 0.3s ease;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+}
+
+.expanded {
+    width: 260px;
+}
+
+.collapsed {
+    width: 72px;
+}
+
+.header {
+    padding: 0px 40px;
+    border-bottom: 1px solid var(--border);
+}
+
+.collapsed .header {
+    padding: 0px 16px;
+}
+
+/* Mobile header padding adjustment removed – keep 40px padding */
+
+.logo {
+    text-align: center;
+}
+
+.logoIcon {
+    font-size: 24px;
+    color: var(--primary);
+    line-height: 1;
+    height: 63px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: width 0.3s ease;
+}
+
+.collapsed .logoIcon {
+    width: 50px;
+    height: 63px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logoIcon img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.logoText {
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+
+.adminInfo {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.adminName {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.adminRole {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Pink-tinted scrollbar */
+.nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.nav::-webkit-scrollbar-thumb {
+    background-color: rgba(232, 62, 140, 0.2);
+    border-radius: 4px;
+}
+
+.nav::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(232, 62, 140, 0.4);
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sectionTitle {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    padding-left: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.navItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+    font-size: 0.875rem;
+    position: relative;
+}
+
+.collapsed .navItem {
+    justify-content: center;
+    padding: 12px;
+}
+
+.navIcon {
+    flex-shrink: 0;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.navText {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+}
+
+.navItem:hover {
+    background-color: var(--primary-very-light);
+    color: var(--primary);
+}
+
+.navItem:hover .navIcon {
+    transform: translateX(2px) scale(1.05);
+    color: var(--primary);
+}
+
+.navItem.active {
+    background-color: var(--primary-light);
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.navItem.active::before {
+    content: '';
+    position: absolute;
+    left: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 100%;
+    background-color: var(--primary);
+    border-radius: 0 2px 2px 0;
+}
+
+.collapsed .navItem.active::before {
+    display: none;
+}
+
+.navItem.active .navIcon {
+    color: var(--primary);
+}
+
+.footer {
+    padding: 4.5px 12px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Mobile specific */
+.overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(17, 24, 39, 0.5);
+    z-index: 40;
+}
+
+@media (max-width: 1024px) {
+    .sidebar {
+        transform: translateX(-100%);
+        width: 260px;
+    }
+
+    .sidebar.mobileOpen {
+        transform: translateX(0);
+    }
+
+    .overlayOpen {
+        display: block;
+    }
+}
