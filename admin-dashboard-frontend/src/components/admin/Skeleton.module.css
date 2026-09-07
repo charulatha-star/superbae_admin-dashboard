@@ -1,0 +1,26 @@
+/* ─── Skeleton — Pink Theme ────────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, #f3e8f0 25%, #f9eef5 50%, #f3e8f0 75%);
+  background-size: 200% 100%;
+  border-radius: 6px;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+.cardSkeleton {
+  border-radius: 12px;
+}
+
+.tableSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

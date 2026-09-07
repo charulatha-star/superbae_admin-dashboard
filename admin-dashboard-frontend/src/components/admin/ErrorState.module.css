@@ -1,0 +1,52 @@
+/* ─── Error State — Pink Theme (red semantics preserved) ───────────────── */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 24px;
+  background-color: var(--error-light);
+  border-radius: 12px;
+  border: 1px solid #FCA5A5;
+  text-align: center;
+}
+
+.icon {
+  color: var(--error);
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #991B1B;
+  margin: 0 0 8px;
+}
+
+.message {
+  font-size: 0.875rem;
+  color: #B91C1C;
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+.retryButton {
+  background: linear-gradient(135deg, var(--error) 0%, #DC2626 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+}
+
+.retryButton:hover {
+  background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+  transform: translateY(-1px);
+}

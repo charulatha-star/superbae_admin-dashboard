@@ -1,0 +1,10 @@
+PORT=3001
+MONGODB_URI=mongodb://username:password@host:port/database?options
+
+# Test database sync configuration (optional)
+# Set to the connection string for the test database
+TEST_MONGODB_URI=mongodb://username:password@host:port/test?options
+
+# Enable/disable automatic sync every 5 minutes
+# Set to 'true' to enable, 'false' to disable (default: false)
+ENABLE_TEST_DB_SYNC=false

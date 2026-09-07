@@ -1,0 +1,41 @@
+{
+  "name": "admin-dashboard-backend",
+  "version": "1.0.0",
+  "description": "Express + MongoDB API replacing json-server",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "nodemon --watch src --ext ts --exec \"npm run build && node dist/index.js\"",
+    "start": "node dist/index.js",
+    "seed": "npm run build && node dist/seed.js",
+    "sync:test-users": "npm run build && node dist/services/triggerSync.js",
+    "fix:indexes": "npm run build && node dist/scripts/fixUserIndexes.js",
+    "test:overview": "npm run build && node dist/scripts/testOverview.js",
+    "test:security": "npm run build && node dist/scripts/testSecurity.js",
+    "test:auth": "npm run build && node dist/scripts/testAuth.js",
+    "test:profile": "npm run build && node dist/scripts/testProfile.js",
+    "test:anonymous-moderation": "npm run build && node dist/scripts/testAnonymousModeration.js",
+    "seed:anonymous-moderation": "npm run build && node dist/scripts/seedAnonymousModeration.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongodb": "^7.6.0",
+    "mongoose": "^9.9.4",
+    "nanoid": "^6.0.1",
+    "node-cron": "^3.0.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^20.19.25",
+    "@types/node-cron": "^3.0.4",
+    "nodemon": "^3.1.14",
+    "typescript": "^5.9.3"
+  }
+}
