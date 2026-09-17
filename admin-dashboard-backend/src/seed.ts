@@ -19,10 +19,41 @@ type SeedData = Record<string, unknown> & {
   admins?: LooseDocument[];
 };
 
+const WARNING = `
+==================================================================
+⚠️  DANGER: DESTRUCTIVE OPERATION
+==================================================================
+This seed script will WIPE ALL DATA from every collection in
+ARRAY_RESOURCES and SINGLETON_RESOURCES via deleteMany({}).
+
+Any data NOT in data/db.json will be PERMANENTLY LOST.
+This is what happened to the 'tips' collection — data/db.json
+did not include tips, so running this script wiped all tips
+documents with no way to recover.
+
+To prevent this from happening again, supply --confirm:
+  npx tsx src/scripts/seed.ts --confirm
+==================================================================
+`;
+
 async function seed(): Promise<void> {
+  if (!process.argv.includes('--confirm')) {
+    console.error(WARNING.trim());
+    console.error('\nAborted: --confirm flag is required. Data will not be modified.');
+    process.exit(1);
+  }
+
   await connectDB();
 
   const dbPath = path.join(__dirname, '../../data/db.json');
+
+  if (!fs.existsSync(dbPath)) {
+    console.error(WARNING.trim());
+    console.error(`\nAborted: data/db.json not found at ${dbPath}.`);
+    console.error('Without this file, running seed would delete all collection data and insert nothing.');
+    process.exit(1);
+  }
+
   const data = JSON.parse(fs.readFileSync(dbPath, 'utf8')) as SeedData;
 
   if (Array.isArray(data.admins)) {
@@ -104,22 +135,66 @@ async function seed(): Promise<void> {
   console.log('Seeding MongoDB database: admin_dashboard');
   console.log(`Source: ${dbPath}`);
 
-  if (Array.isArray(data.permissions) && !data.permissions.some((permission) => permission?.id === 'COMMUNITY_MODERATE')) {
-    data.permissions.push({
-      id: 'COMMUNITY_MODERATE',
-      module: 'community',
-      resource: 'anonymousPosts',
-      action: 'moderate',
-    });
+  if (Array.isArray(data.permissions)) {
+    if (!data.permissions.some((permission) => permission?.id === 'COMMUNITY_MODERATE')) {
+      data.permissions.push({
+        id: 'COMMUNITY_MODERATE',
+        module: 'community',
+        resource: 'anonymousPosts',
+        action: 'moderate',
+      });
+    }
+    if (!data.permissions.some((permission) => permission?.id === 'EVENTS_MANAGE')) {
+      data.permissions.push({
+        id: 'EVENTS_MANAGE',
+        module: 'events',
+        resource: 'events',
+        action: 'manage',
+      });
+    }
+    if (!data.permissions.some((permission) => permission?.id === 'CONTENT_MANAGE')) {
+      data.permissions.push({
+        id: 'CONTENT_MANAGE',
+        module: 'content',
+        resource: 'content',
+        action: 'manage',
+      });
+    }
+    if (!data.permissions.some((permission) => permission?.id === 'CONTENT_PUBLISH')) {
+      data.permissions.push({
+        id: 'CONTENT_PUBLISH',
+        module: 'content',
+        resource: 'content',
+        action: 'publish',
+      });
+    }
+  }
+
+  if (Array.isArray((data as Record<string, unknown>).roles)) {
+    const roles = (data as Record<string, unknown>).roles as LooseDocument[];
+    for (const role of roles) {
+      const isSuperAdmin = role.id === 'role_super_admin';
+      const permissions = Array.isArray(role.permissions) ? role.permissions.map(String) : [];
+      if ((isSuperAdmin || permissions.includes('*')) && !permissions.includes('EVENTS_MANAGE') && !permissions.includes('*')) {
+        role.permissions = [...permissions, 'EVENTS_MANAGE'];
+      }
+      if ((isSuperAdmin || permissions.includes('*')) && !permissions.includes('CONTENT_MANAGE') && !permissions.includes('*')) {
+        role.permissions = [...permissions, 'CONTENT_MANAGE'];
+      }
+      if ((isSuperAdmin || permissions.includes('*')) && !permissions.includes('CONTENT_PUBLISH') && !permissions.includes('*')) {
+        role.permissions = [...permissions, 'CONTENT_PUBLISH'];
+      }
+    }
   }
 
   for (const resource of ARRAY_RESOURCES) {
     const items = data[resource];
     if (!Array.isArray(items)) {
-      console.log(`- skip ${resource} (missing array in db.json)`);
+      console.log(`  ⚠ ${resource}: NOT IN db.json — skipping (collection data preserved, NOT wiped)`);
       continue;
     }
 
+    console.log(`  ⚠ Wiping all existing ${resource} documents, then inserting ${items.length} from db.json`);
     await models[resource].deleteMany({});
     if (items.length > 0) {
       await models[resource].insertMany(items, { ordered: false });
@@ -130,10 +205,11 @@ async function seed(): Promise<void> {
   for (const resource of SINGLETON_RESOURCES) {
     const value = data[resource];
     if (!value || typeof value !== 'object' || Array.isArray(value)) {
-      console.log(`- skip ${resource} (missing object in db.json)`);
+      console.log(`  ⚠ ${resource}: NOT IN db.json — skipping (collection data preserved, NOT wiped)`);
       continue;
     }
 
+    console.log(`  ⚠ Wiping all existing ${resource} documents, then inserting 1 from db.json`);
     await models[resource].deleteMany({});
     await models[resource].create({ ...(value as LooseDocument), _singleton: resource });
     console.log(`- ${resource}: 1 doc`);

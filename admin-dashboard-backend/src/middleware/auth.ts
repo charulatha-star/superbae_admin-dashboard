@@ -57,21 +57,37 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
   }
 }
 
+/**
+ * Resolves the effective permission list for the authenticated admin.
+ * Role permissions win over the admin's own permissions when a role is set.
+ */
+export async function resolveAdminPermissions(req: Request): Promise<string[]> {
+  const admin = req.currentAdmin;
+  const roleId = typeof admin?.roleId === 'string' ? admin.roleId : '';
+  const role = roleId
+    ? await models.roles.findOne({ id: roleId }).lean<LooseDocument | null>()
+    : null;
+
+  if (Array.isArray(role?.permissions)) return role.permissions.map(String);
+  if (Array.isArray(admin?.permissions)) return admin.permissions.map(String);
+  return [];
+}
+
+export function adminHasPermission(permissions: string[], permission: string): boolean {
+  return permissions.includes('*') || permissions.includes(permission);
+}
+
+/** Convenience check for route-level, request-specific permission decisions. */
+export async function hasPermission(req: Request, permission: string): Promise<boolean> {
+  return adminHasPermission(await resolveAdminPermissions(req), permission);
+}
+
 export function requirePermission(permission: string) {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const admin = req.currentAdmin;
-      const roleId = typeof admin?.roleId === 'string' ? admin.roleId : '';
-      const role = roleId
-        ? await models.roles.findOne({ id: roleId }).lean<LooseDocument | null>()
-        : null;
-      const permissions = Array.isArray(role?.permissions)
-        ? role.permissions.map(String)
-        : Array.isArray(admin?.permissions)
-          ? admin.permissions.map(String)
-          : [];
+      const permissions = await resolveAdminPermissions(req);
 
-      if (permissions.includes('*') || permissions.includes(permission)) {
+      if (adminHasPermission(permissions, permission)) {
         next();
         return;
       }

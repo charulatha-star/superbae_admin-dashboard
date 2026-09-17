@@ -69,6 +69,31 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}, p
   return preserveEnvelope ? data as T : normalizeResponse<T>(data);
 }
 
+export async function uploadApi<T>(endpoint: string, file: File): Promise<T> {
+  const response = await fetch(`${getApiBaseUrl()}${endpoint}`, {
+    method: 'POST',
+    headers: getAuthToken() ? { Authorization: `Bearer ${getAuthToken()}` } : {},
+    body: (() => {
+      const formData = new FormData();
+      formData.append('file', file);
+      return formData;
+    })(),
+  });
+
+  if (!response.ok) {
+    let message = `Upload failed: ${response.statusText}`;
+    try {
+      const body = await response.json();
+      if (body?.message) message = body.message;
+    } catch {
+      // Ignore non-JSON upload errors.
+    }
+    throw new Error(message);
+  }
+
+  return response.json() as Promise<T>;
+}
+
 /**
  * Detects a paginated API response ({ data, total, pages }) and extracts
  * the underlying `data` array so callers that expect a plain array keep

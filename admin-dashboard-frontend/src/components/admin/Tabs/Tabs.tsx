@@ -16,9 +16,11 @@ interface TabsProps {
   /** Optional default tab id. Defaults to the first tab. */
   defaultTab?: string;
   ariaLabel?: string;
+  /** Called whenever the active tab changes. */
+  onTabChange?: (tabId: string) => void;
 }
 
-export function Tabs({ tabs, defaultTab, ariaLabel = 'User sections' }: TabsProps) {
+export function Tabs({ tabs, defaultTab, ariaLabel = 'User sections', onTabChange }: TabsProps) {
   const [activeId, setActiveId] = useState(defaultTab ?? tabs[0]?.id ?? '');
 
   const activeTab = tabs.find((t) => t.id === activeId) ?? tabs[0];
@@ -34,7 +36,7 @@ export function Tabs({ tabs, defaultTab, ariaLabel = 'User sections' }: TabsProp
             aria-selected={tab.id === activeTab?.id}
             aria-controls={`panel-${tab.id}`}
             className={`${styles.tab}${tab.id === activeTab?.id ? ` ${styles.tabActive}` : ''}`}
-            onClick={() => setActiveId(tab.id)}
+            onClick={() => { setActiveId(tab.id); onTabChange?.(tab.id); }}
           >
             <span className={styles.tabIcon}>{tab.icon}</span>
             <span className={styles.tabLabel}>{tab.label}</span>

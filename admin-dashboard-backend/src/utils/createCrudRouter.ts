@@ -8,18 +8,42 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Unexpected error';
 }
 
+/**
+ * Query params that control the response (pagination, sorting, search) rather
+ * than filtering documents. Both the json-server style `_limit`/`_page` and the
+ * bare `limit`/`page` aliases are accepted — if a bare `limit` were passed
+ * through as a document filter it would match no documents at all (collections
+ * have no `limit` field), which silently returned an empty list.
+ */
+const CONTROL_PARAMS = [
+  '_limit',
+  'limit',
+  '_page',
+  'page',
+  '_sort',
+  '_order',
+  '_embed',
+  '_expand',
+  'search',
+];
+
 function buildFilter(query: Request['query']): LooseDocument {
   const filter: LooseDocument = {};
 
   for (const [key, value] of Object.entries(query)) {
     if (value === undefined || value === null || value === '') continue;
-    if (['_limit', '_page', '_sort', '_order', '_embed', '_expand'].includes(key)) {
+    if (CONTROL_PARAMS.includes(key)) {
       continue;
     }
     filter[key] = value;
   }
 
   return filter;
+}
+
+function queryInt(value: unknown, fallback: number): number {
+  const parsed = parseInt(String(value ?? ''), 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
 export function createCrudRouter(ModelClass: Model<LooseDocument>, resourceName: string) {
@@ -44,9 +68,9 @@ router.get('/', async (req, res) => {
     // Build filter excluding special params
     const filter = buildFilter(req.query);
 
-    // Pagination parameters
-    const limit = parseInt(req.query._limit as string) || 0;
-    const page = parseInt(req.query._page as string) || 1;
+    // Pagination parameters (json-server `_limit`/`_page` with bare aliases)
+    const limit = queryInt(req.query._limit ?? req.query.limit, 0);
+    const page = queryInt(req.query._page ?? req.query.page, 1);
     const skip = limit && page > 1 ? (page - 1) * limit : 0;
 
     // Sorting parameters

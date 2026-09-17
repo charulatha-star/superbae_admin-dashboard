@@ -1,0 +1,392 @@
+/* ─── Event View additional sections ────────────────────────────────────── */
+.tabStack {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.subBlock {
+    grid-column: 1 / -1;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    background-color: var(--primary-very-light);
+    margin-top: 2px;
+}
+
+.subBlockLabel {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+}
+
+.emptyNote,
+.loadingNote {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    padding: 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dangerZone {
+    background-color: #ffffff;
+    border-radius: 14px;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    padding: 24px;
+}
+
+.dangerTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--error);
+    margin: 0 0 6px;
+}
+
+.dangerDesc {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin: 0 0 18px;
+}
+
+.accountActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.actionBtn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.actionBtn.activate {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.25);
+}
+
+.actionBtn.activate:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35);
+}
+
+.actionBtn.suspend {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.25);
+}
+
+.actionBtn.suspend:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+}
+
+.actionBtn.block {
+    background: linear-gradient(135deg, var(--error) 0%, #DC2626 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+}
+
+.actionBtn.block:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+}
+
+/* ── Attendees tab ──────────────────────────────────────────────────────── */
+.attendeeSummary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.attendeeSearchWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.attendeeSearchWrapper input {
+    width: 100%;
+    padding: 8px 12px 8px 34px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    outline: none;
+    background: #fff;
+    color: var(--text-primary);
+}
+
+.attendeeSearchWrapper input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(232, 62, 140, 0.1);
+}
+
+.attendeeSearchIcon {
+    position: absolute;
+    left: 10px;
+    color: var(--text-muted);
+}
+
+.attendeeSearchClear {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.attendeeSearchClear:hover {
+    color: var(--text-primary);
+    background: var(--hover-bg);
+}
+
+.attendeeTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.attendeeTable th,
+.attendeeTable td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.attendeeTable th {
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.72rem;
+}
+
+.attendeeTable td {
+    color: var(--text-primary);
+}
+
+.attendeeBadge {
+    padding: 3px 10px;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    display: inline-flex;
+    align-items: center;
+}
+
+.attendeeBadge.registered {
+    background-color: var(--info-light);
+    color: var(--info-text);
+}
+
+.attendeeBadge.attended {
+    background-color: var(--success-light);
+    color: var(--success-text);
+}
+
+.attendeeBadge.cancelled {
+    background-color: var(--border-light);
+    color: var(--text-secondary);
+}
+
+.attendeeRowCancelled {
+    opacity: 0.55;
+}
+
+.checkInBtn {
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.checkInBtn:hover:not(:disabled) {
+    background: var(--primary-very-light);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.checkInBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ── Analytics tab ──────────────────────────────────────────────────────── */
+.analyticsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.analyticsCard {
+    background: #fff;
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.analyticsCardLabel {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.analyticsCardValue {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.rateIndicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rateBar {
+    flex: 1;
+    height: 6px;
+    background: var(--border-light);
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.rateBarFill {
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+}
+
+.rateBarFill.attendance {
+    background: var(--success);
+}
+
+.rateBarFill.cancellation {
+    background: var(--error);
+}
+
+.rateBarFill.noShow {
+    background: var(--warning);
+}
+
+.rateText {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 44px;
+    text-align: right;
+}
+
+.chartCard {
+    background: #fff;
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.chartTitle {
+    margin: 0 0 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.trendBarContainer {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 140px;
+    padding-top: 20px;
+}
+
+.trendBarWrapper {
+    flex: 1;
+    min-width: 30px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.trendBar {
+    width: 100%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    border-radius: 4px 4px 0 0;
+    transition: height 0.3s ease;
+    position: relative;
+}
+
+.trendBar:hover {
+    opacity: 0.85;
+}
+
+.trendBarCount {
+    position: absolute;
+    top: -18px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.trendBarLabel {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.trendEmpty {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    padding: 12px 0;
+}
+
+@media (max-width: 768px) {
+    .analyticsGrid {
+        grid-template-columns: 1fr;
+    }
+}
+

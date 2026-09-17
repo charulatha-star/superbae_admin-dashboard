@@ -1,17 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { fetchApi } from '../../../../lib/api/api';
 import { AdminTableSkeleton } from '../../../../components/admin/Skeleton';
 import { NoData } from '../../../../components/admin/NoData/NoData';
-import { BookOpen, Search } from 'lucide-react';
+import { PermissionGate } from '../../../../components/admin/PermissionGate';
+import { BookOpen, Edit2, Eye, Plus, Search } from 'lucide-react';
 import styles from '../../users/page.module.css';
+import ContentStatusBadge from '../ContentStatusBadge';
 
 interface JournalPrompt {
   id: string;
   text: string;
   category: string;
   status: string;
+  scheduledAt?: string | null;
 }
 
 export default function JournalPage(){
@@ -25,8 +29,6 @@ export default function JournalPage(){
     fetchApi<JournalPrompt[]>('/journalPrompts').then(setPrompts).catch(console.error).finally(()=>setLoading(false));
   },[]);
 
-  useEffect(()=>{ setCurrentPage(1); },[search]);
-
   const filtered=prompts.filter(p=>p.text.toLowerCase().includes(search.toLowerCase()));
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginatedData = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -34,14 +36,21 @@ export default function JournalPage(){
   return(
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Journal &amp; Wellness Content</h1>
-        <p className={styles.subtitle}>Manage daily journal prompts and mental wellness insights.</p>
+        <div>
+          <h1 className={styles.title}>Journal &amp; Wellness Content</h1>
+          <p className={styles.subtitle}>Manage daily journal prompts and mental wellness insights.</p>
+        </div>
+        <PermissionGate permission="CONTENT_MANAGE">
+          <Link href="/admin/content/journal/new" className={styles.createBtn}>
+            <Plus size={16} /> Create Prompt
+          </Link>
+        </PermissionGate>
       </div>
 
       <div className={styles.toolbar}>
         <div className={styles.searchWrapper}>
           <Search size={16} className={styles.searchIcon} />
-          <input type="text" placeholder="Search prompts..." value={search} onChange={e=>setSearch(e.target.value)} className={styles.searchInput} />
+          <input type="text" placeholder="Search prompts..." value={search} onChange={e=>{ setSearch(e.target.value); setCurrentPage(1); }} className={styles.searchInput} />
         </div>
       </div>
 
@@ -56,6 +65,7 @@ export default function JournalPage(){
                   <th>Prompt Text</th>
                   <th>Category</th>
                   <th>Status</th>
+                  <th className={styles.actionsHeader}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -63,7 +73,19 @@ export default function JournalPage(){
                   <tr key={p.id}>
                     <td>{p.text}</td>
                     <td>{p.category}</td>
-                    <td><span className={`${styles.statusBadge} ${p.status==='active'?styles.active:styles.suspended}`}>{p.status}</span></td>
+                    <td><ContentStatusBadge status={p.status} scheduledAt={p.scheduledAt} /></td>
+                    <td className={styles.actionsCell}>
+                      <div className={styles.actionButtons}>
+                        <Link href={`/admin/content/journal/${p.id}/view`} className={styles.iconBtn} title="View">
+                          <Eye size={16} />
+                        </Link>
+                        <PermissionGate permission="CONTENT_MANAGE">
+                          <Link href={`/admin/content/journal/${p.id}`} className={styles.iconBtn} title="Edit">
+                            <Edit2 size={16} />
+                          </Link>
+                        </PermissionGate>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>

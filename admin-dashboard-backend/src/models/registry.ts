@@ -18,6 +18,9 @@ export const ARRAY_RESOURCES = [
   'zodiac',
   'tips',
   'banners',
+  'fortuneCookies',
+  'communityGuidelines',
+  'appAnnouncements',
   'aiUsage',
   'aiConfig',
   'subscriptions',
@@ -73,6 +76,25 @@ export const models = {} as ModelRegistry;
 function toModelName(resource: string): string {
   return resource.charAt(0).toUpperCase() + resource.slice(1);
 }
+
+/**
+ * Shared fields applied to every CMS content collection.
+ * Each content schema spreads this object to get consistent
+ * status, publishing, featuring, audit, and authorship fields.
+ */
+const contentSharedFields = {
+  status: {
+    type: String,
+    enum: ['draft', 'published', 'archived'],
+    default: 'draft',
+  },
+  publishedAt: { type: Date, default: null },
+  scheduledAt: { type: Date, default: null },
+  isFeatured: { type: Boolean, default: false },
+  authorId: { type: String, default: null },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+};
 
 for (const resource of ARRAY_RESOURCES) {
   const schema = 
@@ -180,14 +202,35 @@ for (const resource of ARRAY_RESOURCES) {
             ? new mongoose.Schema(
                 {
                   id: { type: String, required: true, unique: true, index: true },
-                  title: { type: String, default: null },
-                  type: { type: String, default: null },
-                  date: { type: Date, default: null },
+                  title: { type: String, required: true, trim: true },
+                  type: { type: String, required: true, trim: true },
+                  date: { type: Date, required: true },
                   status: { type: String, default: null },
                   attendees: { type: Number, default: 0 },
+                  capacity: { type: Number, required: true, min: 1 },
+                  registeredCount: { type: Number, default: 0, min: 0 },
+                  checkedInCount: { type: Number, default: 0, min: 0 },
                   host: { type: String, default: null },
-                  category: { type: String, default: null },
+                  category: { type: String, required: true, trim: true },
                   organizerId: { type: String, default: null, index: true },
+                  imageUrl: { type: String, default: null, trim: true },
+                  description: { type: String, default: null, trim: true },
+                  location: { type: String, default: null, trim: true },
+                  reminderSentAt: { type: Date, default: null },
+                  reminderConfig: {
+                    enabled: { type: Boolean, default: false },
+                    sendBeforeHours: {
+                      type: Number,
+                      default: 24,
+                      min: 1,
+                      validate: {
+                        validator(this: { enabled?: boolean }, value: number): boolean {
+                          return this.enabled !== true || Number.isFinite(value) && value > 0;
+                        },
+                        message: 'sendBeforeHours must be greater than 0 when reminders are enabled.',
+                      },
+                    },
+                  },
                 },
                 { strict: false, versionKey: false, id: false, collection: resource }
               )
@@ -496,6 +539,107 @@ for (const resource of ARRAY_RESOURCES) {
                   createdAt: { type: Date, default: Date.now },
                   groupId: { type: String, default: null, index: true },
                   clubId: { type: String, default: null, index: true },
+                },
+                { strict: false, versionKey: false, id: false, collection: resource }
+              )
+
+          : resource === 'affirmations'
+            ? new mongoose.Schema(
+                {
+                  id: { type: String, required: true, unique: true, index: true },
+                  ...contentSharedFields,
+                  text: { type: String, required: true },
+                  category: { type: String, default: null },
+                },
+                { strict: false, versionKey: false, id: false, collection: resource }
+              )
+
+          : resource === 'zodiac'
+            ? new mongoose.Schema(
+                {
+                  id: { type: String, required: true, unique: true, index: true },
+                  ...contentSharedFields,
+                  sign: { type: String, required: true },
+                  date: { type: Date, required: true },
+                  horoscope: { type: String, default: null },
+                  love: { type: String, default: null },
+                  career: { type: String, default: null },
+                },
+                { strict: false, versionKey: false, id: false, collection: resource }
+              )
+
+          : resource === 'tips'
+            ? new mongoose.Schema(
+                {
+                  id: { type: String, required: true, unique: true, index: true },
+                  ...contentSharedFields,
+                  title: { type: String, required: true },
+                  body: { type: String, required: true },
+                  category: { type: String, default: null },
+                  subtype: { type: String, enum: ['relationship', 'wellness'], required: true },
+                  views: { type: Number, default: 0 },
+                },
+                { strict: false, versionKey: false, id: false, collection: resource }
+              )
+
+          : resource === 'banners'
+            ? new mongoose.Schema(
+                {
+                  id: { type: String, required: true, unique: true, index: true },
+                  ...contentSharedFields,
+                  title: { type: String, required: true },
+                  type: { type: String, enum: ['banner', 'promotional'], default: 'banner' },
+                  placement: { type: String, default: null },
+                  startDate: { type: Date, default: null },
+                  endDate: { type: Date, default: null },
+                  clicks: { type: Number, default: 0 },
+                  impressions: { type: Number, default: 0 },
+                },
+                { strict: false, versionKey: false, id: false, collection: resource }
+              )
+
+          : resource === 'journalPrompts'
+            ? new mongoose.Schema(
+                {
+                  id: { type: String, required: true, unique: true, index: true },
+                  ...contentSharedFields,
+                  text: { type: String, required: true },
+                  category: { type: String, default: null },
+                },
+                { strict: false, versionKey: false, id: false, collection: resource }
+              )
+
+            : resource === 'fortuneCookies'
+            ? new mongoose.Schema(
+                {
+                  id: { type: String, required: true, unique: true, index: true },
+                  ...contentSharedFields,
+                  text: { type: String, required: true },
+                  category: { type: String, default: null },
+                },
+                { strict: false, versionKey: false, id: false, collection: resource }
+              )
+
+            : resource === 'communityGuidelines'
+            ? new mongoose.Schema(
+                {
+                  id: { type: String, required: true, unique: true, index: true },
+                  ...contentSharedFields,
+                  title: { type: String, required: true },
+                  body: { type: String, required: true },
+                  order: { type: Number, default: 0 },
+                },
+                { strict: false, versionKey: false, id: false, collection: resource }
+              )
+
+            : resource === 'appAnnouncements'
+            ? new mongoose.Schema(
+                {
+                  id: { type: String, required: true, unique: true, index: true },
+                  ...contentSharedFields,
+                  title: { type: String, required: true },
+                  body: { type: String, required: true },
+                  severity: { type: String, enum: ['info', 'warning', 'critical'], default: 'info' },
                 },
                 { strict: false, versionKey: false, id: false, collection: resource }
               )

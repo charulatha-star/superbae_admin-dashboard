@@ -1,17 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { fetchApi } from '../../../../lib/api/api';
 import { AdminTableSkeleton } from '../../../../components/admin/Skeleton';
 import { NoData } from '../../../../components/admin/NoData/NoData';
-import { Star, Search } from 'lucide-react';
+import { PermissionGate } from '../../../../components/admin/PermissionGate';
+import { Edit2, Eye, Plus, Search, Star } from 'lucide-react';
 import styles from '../../users/page.module.css';
+import ContentStatusBadge from '../ContentStatusBadge';
 
 interface Affirmation {
   id: string;
   text: string;
   category: string;
   status: string;
+  scheduledAt?: string | null;
   createdAt: string;
 }
 
@@ -19,8 +23,8 @@ export default function AffirmationsPage() {
   const [items, setItems] = useState<Affirmation[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-
-  useEffect(() => { setCurrentPage(1); }, [search]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchApi<Affirmation[]>('/affirmations').then(setItems).catch(console.error).finally(() => setLoading(false));
@@ -31,8 +35,6 @@ export default function AffirmationsPage() {
     a.category.toLowerCase().includes(search.toLowerCase())
   );
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginatedData = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -43,6 +45,11 @@ export default function AffirmationsPage() {
           <h1 className={styles.title}>Affirmations</h1>
           <p className={styles.subtitle}>Manage daily affirmation content.</p>
         </div>
+        <PermissionGate permission="CONTENT_MANAGE">
+          <Link href="/admin/content/affirmations/new" className={styles.createBtn}>
+            <Plus size={16} /> Create Affirmation
+          </Link>
+        </PermissionGate>
       </div>
 
       <div className={styles.statsRow}>
@@ -65,7 +72,7 @@ export default function AffirmationsPage() {
       <div className={styles.toolbar}>
         <div className={styles.searchWrapper}>
           <Search size={16} className={styles.searchIcon} />
-          <input type="text" placeholder="Search affirmations..." value={search} onChange={e => setSearch(e.target.value)} className={styles.searchInput} />
+          <input type="text" placeholder="Search affirmations..." value={search} onChange={e => { setSearch(e.target.value); setCurrentPage(1); }} className={styles.searchInput} />
         </div>
       </div>
 
@@ -81,6 +88,7 @@ export default function AffirmationsPage() {
                 <th>Category</th>
                 <th>Status</th>
                 <th>Created</th>
+                <th className={styles.actionsHeader}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -88,8 +96,20 @@ export default function AffirmationsPage() {
                 <tr key={item.id}>
                   <td>{item.text}</td>
                   <td>{item.category}</td>
-                  <td><span className={`${styles.badge} ${item.status === 'published' ? styles.active : styles.premium}`}>{item.status}</span></td>
+                  <td><ContentStatusBadge status={item.status} scheduledAt={item.scheduledAt} /></td>
                   <td>{new Date(item.createdAt).toLocaleDateString()}</td>
+                  <td className={styles.actionsCell}>
+                    <div className={styles.actionButtons}>
+                      <Link href={`/admin/content/affirmations/${item.id}/view`} className={styles.iconBtn} title="View">
+                        <Eye size={16} />
+                      </Link>
+                      <PermissionGate permission="CONTENT_MANAGE">
+                        <Link href={`/admin/content/affirmations/${item.id}`} className={styles.iconBtn} title="Edit">
+                          <Edit2 size={16} />
+                        </Link>
+                      </PermissionGate>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

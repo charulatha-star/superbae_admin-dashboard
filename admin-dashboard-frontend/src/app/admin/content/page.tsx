@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { FileText, Star, Lightbulb, Image, BookOpen } from 'lucide-react';
+import { Bell, BookOpen, Cookie, FileText, Image, Lightbulb, Star } from 'lucide-react';
 import styles from '../community/page.module.css';
 
 const sections = [
@@ -10,6 +10,9 @@ const sections = [
   { href: '/admin/content/tips', icon: Lightbulb, label: 'Wellness Tips', desc: 'Manage health and wellness tips', color: '#16a34a' },
   { href: '/admin/content/banners', icon: Image, label: 'Banners', desc: 'Manage promotional banners', color: '#0891b2' },
   { href: '/admin/content/journal', icon: BookOpen, label: 'journal', desc: 'Manage journal content', color: '#f17ec5' },
+  { href: '/admin/content/fortune', icon: Cookie, label: 'Fortune Cookies', desc: 'Manage daily fortune cookie messages', color: '#b45309' },
+  { href: '/admin/content/guidelines', icon: FileText, label: 'Community Guidelines', desc: 'Manage community rules and guidelines', color: '#0d9488' },
+  { href: '/admin/content/announcements', icon: Bell, label: 'Announcements', desc: 'Manage in-app announcements and notices', color: '#dc2626' },
 ];
 
 export default function ContentPage() {
@@ -17,7 +20,7 @@ export default function ContentPage() {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>Content Management</h1>
-        <p className={styles.subtitle}>Manage all platform content including affirmations, zodiac, tips, and banners.</p>
+        <p className={styles.subtitle}>Manage all platform content including affirmations, zodiac, tips, banners, fortunes, guidelines, and announcements.</p>
       </div>
       <div className={styles.grid}>
         {sections.map(({ href, icon: Icon, label, desc, color }) => (

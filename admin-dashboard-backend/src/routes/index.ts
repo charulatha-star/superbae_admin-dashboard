@@ -5,6 +5,8 @@ import { createSingletonRouter } from '../utils/createSingletonRouter';
 import { cleanDoc } from '../utils/clean';
 import { createAuthRouter } from './auth';
 import { createAnonymousModerationRouter } from './anonymousModeration';
+import { createEventAnalyticsRouter, createEventCrudRouter, createEventManagementRouter, createEventRegistrationRouter } from './eventManagement';
+import { createContentManagementRouter } from './contentManagement';
 import { requireAuth } from '../middleware/auth';
 
 export function registerRoutes(app: Express): void {
@@ -16,6 +18,11 @@ export function registerRoutes(app: Express): void {
   });
 
   app.use(createAnonymousModerationRouter(models));
+  app.use('/event-management', createEventManagementRouter(models));
+  app.use('/events', createEventAnalyticsRouter(models));
+  app.use('/events', createEventRegistrationRouter(models));
+  app.use('/events', createEventCrudRouter(models));
+  app.use(createContentManagementRouter(models));
 
   app.get('/users/:id/subscription', requireAuth, async (req, res) => {
     try {
@@ -822,8 +829,20 @@ export function registerRoutes(app: Express): void {
     }
   });
 
+  const CONTENT_RESOURCES_TO_SKIP = new Set([
+    'tips',
+    'affirmations',
+    'zodiac',
+    'banners',
+    'journalPrompts',
+    'fortuneCookies',
+    'communityGuidelines',
+    'appAnnouncements',
+  ]);
+
   for (const resource of ARRAY_RESOURCES) {
     if (resource === 'anonymousPosts') continue;
+    if (CONTENT_RESOURCES_TO_SKIP.has(resource)) continue;
     app.use(`/${resource}`, requireAuth, createCrudRouter(models[resource], resource));
   }
 
