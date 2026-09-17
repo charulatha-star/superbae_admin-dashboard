@@ -5,7 +5,6 @@ import { createSingletonRouter } from '../utils/createSingletonRouter';
 import { cleanDoc } from '../utils/clean';
 import { createAuthRouter } from './auth';
 import { createAnonymousModerationRouter } from './anonymousModeration';
-import { createGroupsRouter } from './groups';
 import { requireAuth } from '../middleware/auth';
 
 export function registerRoutes(app: Express): void {
@@ -17,9 +16,6 @@ export function registerRoutes(app: Express): void {
   });
 
   app.use(createAnonymousModerationRouter(models));
-  
-  // Register groups router
-  app.use('/groups', createGroupsRouter());
 
   app.get('/users/:id/subscription', requireAuth, async (req, res) => {
     try {
@@ -826,8 +822,20 @@ export function registerRoutes(app: Express): void {
     }
   });
 
+  const CONTENT_RESOURCES_TO_SKIP = new Set([
+    'tips',
+    'affirmations',
+    'zodiac',
+    'banners',
+    'journalPrompts',
+    'fortuneCookies',
+    'communityGuidelines',
+    'appAnnouncements',
+  ]);
+
   for (const resource of ARRAY_RESOURCES) {
     if (resource === 'anonymousPosts') continue;
+    if (CONTENT_RESOURCES_TO_SKIP.has(resource)) continue;
     app.use(`/${resource}`, requireAuth, createCrudRouter(models[resource], resource));
   }
 

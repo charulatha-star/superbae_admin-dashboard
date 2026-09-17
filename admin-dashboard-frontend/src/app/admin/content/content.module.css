@@ -1,0 +1,303 @@
+/* ── CMS Content — Create/Edit + Detail/View (Pink Theme) ─────────────── */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.backLink:hover {
+  color: var(--primary);
+}
+
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ── Buttons ───────────────────────────────────────────────────────────── */
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background-color: #ffffff;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.actionBtn:hover:not(:disabled) {
+  background-color: var(--hover-bg);
+  border-color: var(--text-muted);
+}
+
+.actionBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.publishBtn {
+  background-color: var(--success);
+  border-color: var(--success);
+  color: #ffffff;
+}
+
+.publishBtn:hover:not(:disabled) {
+  background-color: #059669;
+  border-color: #059669;
+}
+
+.unpublishBtn {
+  background-color: var(--warning);
+  border-color: var(--warning);
+  color: #ffffff;
+}
+
+.unpublishBtn:hover:not(:disabled) {
+  background-color: #d97706;
+  border-color: #d97706;
+}
+
+.dangerBtn {
+  color: var(--error);
+  border-color: var(--error-light);
+  background-color: var(--error-light);
+}
+
+.dangerBtn:hover:not(:disabled) {
+  background-color: var(--error);
+  border-color: var(--error);
+  color: #ffffff;
+}
+
+/* ── Status badge ──────────────────────────────────────────────────────── */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  letter-spacing: 0.02em;
+}
+
+.badgeDraft {
+  background-color: var(--warning-light);
+  color: var(--warning-text);
+}
+
+.badgePublished {
+  background-color: var(--success-light);
+  color: var(--success-text);
+}
+
+.badgeArchived {
+  background-color: var(--border-light);
+  color: var(--text-secondary);
+}
+
+.badgeUnknown {
+  background-color: var(--info-light);
+  color: var(--info-text);
+}
+
+.badgeScheduled {
+  background-color: var(--primary-light, #f3e8ff);
+  color: var(--primary-dark, #6d28d9);
+}
+
+/* ── Detail view ───────────────────────────────────────────────────────── */
+
+.detailCard {
+  background-color: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.detailTitle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.detailMeta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+}
+
+.detailField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.detailFieldWide {
+  grid-column: 1 / -1;
+}
+
+.detailLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.detailValue {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.detailValueMuted {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ── Activity (audit) section ──────────────────────────────────────────── */
+
+.sectionHeading {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 8px 0 0;
+}
+
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.activityItem {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-light);
+  border-left: 3px solid var(--primary);
+  border-radius: 9px;
+  background-color: var(--hover-bg);
+}
+
+.activityAction {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+.activityText {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.activityMeta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.activityEmpty {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  padding: 14px;
+  border: 1px dashed var(--border);
+  border-radius: 9px;
+}
+
+/* ── States ────────────────────────────────────────────────────────────── */
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.errorBox {
+  background-color: var(--error-light);
+  border: 1px solid var(--error);
+  color: var(--error-text);
+  border-radius: 9px;
+  padding: 12px 14px;
+  font-size: 0.85rem;
+}
+
+.accessDenied {
+  background-color: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.fieldHint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 90px;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  grid-column: 1 / -1;
+}

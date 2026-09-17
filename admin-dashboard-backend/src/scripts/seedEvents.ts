@@ -67,6 +67,9 @@ async function seedEvents(): Promise<void> {
         date: futureDate(7), // In 7 days
         status: 'upcoming',
         attendees: 0,
+        capacity: 100,
+        registeredCount: 0,
+        checkedInCount: 0,
         host: 'Alice Valid',
         category: 'Wellness',
         organizerId: REAL_USER_IDS.alice,
@@ -78,6 +81,9 @@ async function seedEvents(): Promise<void> {
         date: futureDate(14), // In 14 days
         status: 'upcoming',
         attendees: 0,
+        capacity: 100,
+        registeredCount: 0,
+        checkedInCount: 0,
         host: 'Grace Hall',
         category: 'Wellness',
         organizerId: REAL_USER_IDS.divya,
@@ -89,6 +95,9 @@ async function seedEvents(): Promise<void> {
         date: pastDate(5), // 5 days ago
         status: 'completed',
         attendees: 0,
+        capacity: 100,
+        registeredCount: 0,
+        checkedInCount: 0,
         host: 'Alice Valid',
         category: 'Wellness',
         organizerId: REAL_USER_IDS.alice,

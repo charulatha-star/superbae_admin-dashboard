@@ -1,11 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { fetchApi } from '../../../../lib/api/api';
 import { AdminTableSkeleton } from '../../../../components/admin/Skeleton';
 import { NoData } from '../../../../components/admin/NoData/NoData';
-import { Lightbulb, Search } from 'lucide-react';
+import { PermissionGate } from '../../../../components/admin/PermissionGate';
+import { Edit2, Eye, Lightbulb, Plus, Search } from 'lucide-react';
 import styles from '../../users/page.module.css';
+import ContentStatusBadge from '../ContentStatusBadge';
 
 interface Tip {
   id: string;
@@ -13,6 +16,7 @@ interface Tip {
   body: string;
   category: string;
   status: string;
+  scheduledAt?: string | null;
   views: number;
   createdAt: string;
 }
@@ -21,8 +25,8 @@ export default function TipsPage() {
   const [items, setItems] = useState<Tip[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-
-  useEffect(() => { setCurrentPage(1); }, [search]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchApi<Tip[]>('/tips').then(setItems).catch(console.error).finally(() => setLoading(false));
@@ -33,8 +37,6 @@ export default function TipsPage() {
     t.category.toLowerCase().includes(search.toLowerCase())
   );
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginatedData = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -45,6 +47,11 @@ export default function TipsPage() {
           <h1 className={styles.title}>Wellness Tips</h1>
           <p className={styles.subtitle}>Manage health and wellness tip content.</p>
         </div>
+        <PermissionGate permission="CONTENT_MANAGE">
+          <Link href="/admin/content/tips/new" className={styles.createBtn}>
+            <Plus size={16} /> Create Tip
+          </Link>
+        </PermissionGate>
       </div>
 
       <div className={styles.statsRow}>
@@ -67,7 +74,7 @@ export default function TipsPage() {
       <div className={styles.toolbar}>
         <div className={styles.searchWrapper}>
           <Search size={16} className={styles.searchIcon} />
-          <input type="text" placeholder="Search tips..." value={search} onChange={e => setSearch(e.target.value)} className={styles.searchInput} />
+          <input type="text" placeholder="Search tips..." value={search} onChange={e => { setSearch(e.target.value); setCurrentPage(1); }} className={styles.searchInput} />
         </div>
       </div>
 
@@ -84,6 +91,7 @@ export default function TipsPage() {
                 <th>Views</th>
                 <th>Status</th>
                 <th>Created</th>
+                <th className={styles.actionsHeader}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -92,8 +100,20 @@ export default function TipsPage() {
                   <td><strong>{tip.title}</strong></td>
                   <td>{tip.category}</td>
                   <td>{tip.views.toLocaleString()}</td>
-                  <td><span className={`${styles.badge} ${tip.status === 'published' ? styles.active : styles.premium}`}>{tip.status}</span></td>
+                  <td><ContentStatusBadge status={tip.status} scheduledAt={tip.scheduledAt} /></td>
                   <td>{new Date(tip.createdAt).toLocaleDateString()}</td>
+                  <td className={styles.actionsCell}>
+                    <div className={styles.actionButtons}>
+                      <Link href={`/admin/content/tips/${tip.id}/view`} className={styles.iconBtn} title="View">
+                        <Eye size={16} />
+                      </Link>
+                      <PermissionGate permission="CONTENT_MANAGE">
+                        <Link href={`/admin/content/tips/${tip.id}`} className={styles.iconBtn} title="Edit">
+                          <Edit2 size={16} />
+                        </Link>
+                      </PermissionGate>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

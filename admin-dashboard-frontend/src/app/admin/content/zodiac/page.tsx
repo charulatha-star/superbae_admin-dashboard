@@ -1,11 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { fetchApi } from '../../../../lib/api/api';
 import { AdminTableSkeleton } from '../../../../components/admin/Skeleton';
 import { NoData } from '../../../../components/admin/NoData/NoData';
-import { Search } from 'lucide-react';
+import { PermissionGate } from '../../../../components/admin/PermissionGate';
+import { Edit2, Eye, Plus, Search } from 'lucide-react';
 import styles from '../../users/page.module.css';
+import ContentStatusBadge from '../ContentStatusBadge';
 
 interface ZodiacEntry {
   id: string;
@@ -15,14 +18,15 @@ interface ZodiacEntry {
   love: string;
   career: string;
   status: string;
+  scheduledAt?: string | null;
 }
 
 export default function ZodiacPage() {
   const [items, setItems] = useState<ZodiacEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-
-  useEffect(() => { setCurrentPage(1); }, [search]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchApi<ZodiacEntry[]>('/zodiac').then(setItems).catch(console.error).finally(() => setLoading(false));
@@ -30,8 +34,6 @@ export default function ZodiacPage() {
 
   const filtered = items.filter(z => z.sign.toLowerCase().includes(search.toLowerCase()));
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginatedData = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -42,12 +44,17 @@ export default function ZodiacPage() {
           <h1 className={styles.title}>Zodiac Content</h1>
           <p className={styles.subtitle}>Manage daily horoscope and zodiac content.</p>
         </div>
+        <PermissionGate permission="CONTENT_MANAGE">
+          <Link href="/admin/content/zodiac/new" className={styles.createBtn}>
+            <Plus size={16} /> Create Zodiac Entry
+          </Link>
+        </PermissionGate>
       </div>
 
       <div className={styles.toolbar}>
         <div className={styles.searchWrapper}>
           <Search size={16} className={styles.searchIcon} />
-          <input type="text" placeholder="Search zodiac sign..." value={search} onChange={e => setSearch(e.target.value)} className={styles.searchInput} />
+          <input type="text" placeholder="Search zodiac sign..." value={search} onChange={e => { setSearch(e.target.value); setCurrentPage(1); }} className={styles.searchInput} />
         </div>
       </div>
 
@@ -65,6 +72,7 @@ export default function ZodiacPage() {
                 <th>Love</th>
                 <th>Career</th>
                 <th>Status</th>
+                <th className={styles.actionsHeader}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -75,7 +83,19 @@ export default function ZodiacPage() {
                   <td style={{ maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.horoscope}</td>
                   <td style={{ maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.love}</td>
                   <td style={{ maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.career}</td>
-                  <td><span className={`${styles.badge} ${item.status === 'published' ? styles.active : styles.premium}`}>{item.status}</span></td>
+                  <td><ContentStatusBadge status={item.status} scheduledAt={item.scheduledAt} /></td>
+                  <td className={styles.actionsCell}>
+                    <div className={styles.actionButtons}>
+                      <Link href={`/admin/content/zodiac/${item.id}/view`} className={styles.iconBtn} title="View">
+                        <Eye size={16} />
+                      </Link>
+                      <PermissionGate permission="CONTENT_MANAGE">
+                        <Link href={`/admin/content/zodiac/${item.id}`} className={styles.iconBtn} title="Edit">
+                          <Edit2 size={16} />
+                        </Link>
+                      </PermissionGate>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

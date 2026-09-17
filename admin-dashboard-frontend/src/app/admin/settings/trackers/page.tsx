@@ -60,7 +60,7 @@ export default function TrackersPage(){
               </tr>
             </thead>
             <tbody>
-              {paginatedData.map(t=> (
+              {paginatedData.map(t=> ( 
                 <tr key={t.id}>
                   <td>{t.name}</td>
                   <td>{t.category}</td>
