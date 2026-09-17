@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.requireAuth = requireAuth;
+exports.resolveAdminPermissions = resolveAdminPermissions;
+exports.adminHasPermission = adminHasPermission;
+exports.hasPermission = hasPermission;
 exports.requirePermission = requirePermission;
 const registry_1 = require("../models/registry");
 /**
@@ -45,20 +48,34 @@ async function requireAuth(req, res, next) {
         res.status(500).json({ message });
     }
 }
+/**
+ * Resolves the effective permission list for the authenticated admin.
+ * Role permissions win over the admin's own permissions when a role is set.
+ */
+async function resolveAdminPermissions(req) {
+    const admin = req.currentAdmin;
+    const roleId = typeof admin?.roleId === 'string' ? admin.roleId : '';
+    const role = roleId
+        ? await registry_1.models.roles.findOne({ id: roleId }).lean()
+        : null;
+    if (Array.isArray(role?.permissions))
+        return role.permissions.map(String);
+    if (Array.isArray(admin?.permissions))
+        return admin.permissions.map(String);
+    return [];
+}
+function adminHasPermission(permissions, permission) {
+    return permissions.includes('*') || permissions.includes(permission);
+}
+/** Convenience check for route-level, request-specific permission decisions. */
+async function hasPermission(req, permission) {
+    return adminHasPermission(await resolveAdminPermissions(req), permission);
+}
 function requirePermission(permission) {
     return async (req, res, next) => {
         try {
-            const admin = req.currentAdmin;
-            const roleId = typeof admin?.roleId === 'string' ? admin.roleId : '';
-            const role = roleId
-                ? await registry_1.models.roles.findOne({ id: roleId }).lean()
-                : null;
-            const permissions = Array.isArray(role?.permissions)
-                ? role.permissions.map(String)
-                : Array.isArray(admin?.permissions)
-                    ? admin.permissions.map(String)
-                    : [];
-            if (permissions.includes('*') || permissions.includes(permission)) {
+            const permissions = await resolveAdminPermissions(req);
+            if (adminHasPermission(permissions, permission)) {
                 next();
                 return;
             }

@@ -9,6 +9,8 @@ const cors_1 = __importDefault(require("cors"));
 const db_1 = require("./config/db");
 const routes_1 = require("./routes");
 const testDbSync_1 = require("./services/testDbSync");
+const eventReminders_1 = require("./services/eventReminders");
+const contentScheduler_1 = require("./services/contentScheduler");
 const registry_1 = require("./models/registry");
 function errorMessage(error) {
     return error instanceof Error ? error.message : 'Internal server error';
@@ -17,18 +19,27 @@ let server = null;
 async function start() {
     await (0, db_1.connectDB)();
     // Start auto-sync if enabled
-    (0, testDbSync_1.startAutoSync)(registry_1.models);
+    // startAutoSync(models);
+    // startEventReminderJob(models);
+    // Phase 5: scheduled content auto-publishing (separate cron task).
+    (0, contentScheduler_1.startContentScheduler)(registry_1.models);
     const app = (0, express_1.default)();
     const port = process.env.PORT || 3001;
     app.use((0, cors_1.default)({
         origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
     }));
     app.use(express_1.default.json({ limit: '2mb' }));
+    app.use('/uploads', express_1.default.static('uploads'));
     (0, routes_1.registerRoutes)(app);
     const errorHandler = (err, _req, res, next) => {
         void next;
         console.error(err);
-        res.status(500).json({ message: errorMessage(err) });
+        const errorCode = typeof err?.code === 'string' ? err.code : '';
+        const statusCode = typeof err?.statusCode === 'number'
+            ? err.statusCode
+            : errorCode === 'LIMIT_FILE_SIZE' ? 400 : 500;
+        const message = errorCode === 'LIMIT_FILE_SIZE' ? 'Image file must be 5MB or smaller.' : errorMessage(err);
+        res.status(statusCode).json({ message });
     };
     app.use(errorHandler);
     server = app.listen(port, () => {
@@ -38,6 +49,8 @@ async function start() {
     process.on('SIGTERM', async () => {
         console.log('\nSIGTERM received. Shutting down gracefully...');
         (0, testDbSync_1.stopAutoSync)();
+        (0, eventReminders_1.stopEventReminderJob)();
+        (0, contentScheduler_1.stopContentScheduler)();
         await (0, testDbSync_1.closeTestDbConnection)();
         server?.close(() => {
             console.log('Server closed');
@@ -47,6 +60,8 @@ async function start() {
     process.on('SIGINT', async () => {
         console.log('\nSIGINT received. Shutting down gracefully...');
         (0, testDbSync_1.stopAutoSync)();
+        (0, eventReminders_1.stopEventReminderJob)();
+        (0, contentScheduler_1.stopContentScheduler)();
         await (0, testDbSync_1.closeTestDbConnection)();
         server?.close(() => {
             console.log('Server closed');

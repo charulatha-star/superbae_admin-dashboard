@@ -7,7 +7,6 @@ const createSingletonRouter_1 = require("../utils/createSingletonRouter");
 const clean_1 = require("../utils/clean");
 const auth_1 = require("./auth");
 const anonymousModeration_1 = require("./anonymousModeration");
-const groups_1 = require("./groups");
 const auth_2 = require("../middleware/auth");
 function registerRoutes(app) {
     app.use('/auth', (0, auth_1.createAuthRouter)(registry_1.models));
@@ -16,8 +15,6 @@ function registerRoutes(app) {
         res.json({ ok: true });
     });
     app.use((0, anonymousModeration_1.createAnonymousModerationRouter)(registry_1.models));
-    // Register groups router
-    app.use('/groups', (0, groups_1.createGroupsRouter)());
     app.get('/users/:id/subscription', auth_2.requireAuth, async (req, res) => {
         try {
             const userId = req.params.id;
@@ -751,8 +748,20 @@ function registerRoutes(app) {
             res.status(500).json({ success: false, message });
         }
     });
+    const CONTENT_RESOURCES_TO_SKIP = new Set([
+        'tips',
+        'affirmations',
+        'zodiac',
+        'banners',
+        'journalPrompts',
+        'fortuneCookies',
+        'communityGuidelines',
+        'appAnnouncements',
+    ]);
     for (const resource of registry_1.ARRAY_RESOURCES) {
         if (resource === 'anonymousPosts')
+            continue;
+        if (CONTENT_RESOURCES_TO_SKIP.has(resource))
             continue;
         app.use(`/${resource}`, auth_2.requireAuth, (0, createCrudRouter_1.createCrudRouter)(registry_1.models[resource], resource));
     }
