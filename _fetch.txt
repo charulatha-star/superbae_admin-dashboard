@@ -1,0 +1,152 @@
+app\admin\ai\config\page.tsx:4:import { fetchApi } from '../../../../lib/api/api';
+app\admin\ai\config\page.tsx:27:    fetchApi<AIConfig[]>('/aiConfig').then(setConfigs).catch(console.error).finally(()=>setLoading(false));
+app\admin\ai\dashboard\page.tsx:4:import { fetchApi } from '../../../../lib/api/api';
+app\admin\ai\dashboard\page.tsx:23:    fetchApi<AIDashboard>('/aiDashboard').then(setData).catch(console.error).finally(() => setLoading(false));
+app\admin\ai\usage\page.tsx:4:import { fetchApi } from '../../../../lib/api/api';
+app\admin\ai\usage\page.tsx:25:    fetchApi<AIUsage[]>('/aiUsage').then(setData).catch(console.error).finally(()=>setLoading(false));
+app\admin\analytics\users\page.tsx:4:import { fetchApi } from '../../../../lib/api/api';
+app\admin\analytics\users\page.tsx:26:    fetchApi<AnalyticsUser[]>('/analyticsUsers').then(setData).catch(console.error).finally(()=>setLoading(false));
+app\admin\audit-logs\page.tsx:4:import { fetchApi } from '../../../lib/api/api';
+app\admin\audit-logs\page.tsx:38:    fetchApi<AuditLog[]>('/auditLogs').then(setLogs).catch(console.error).finally(() => setLoading(false));
+app\admin\community\anonymous\history\page.tsx:6:import { fetchApi } from '../../../../../lib/api/api';
+app\admin\community\anonymous\history\page.tsx:21:  useEffect(() => { setLoading(true); fetchApi<HistoryResponse>(`/anonymousModerationHistory?page=${page}&limit=25`, {}, true).then(setResponse).catch(console.error).finally(() => setLoading(false)); }, [page]);
+app\admin\community\anonymous\page.tsx:5:import { fetchApi } from '../../../../lib/api/api';
+app\admin\community\anonymous\page.tsx:41:    fetchApi<QueueResponse>(`/anonymousPosts?filter=${filter}&search=${encodeURIComponent(search)}&page=${page}&limit=10`, {}, true)
+app\admin\community\anonymous\[postId]\view\page.tsx:7:import { fetchApi } from '../../../../../../lib/api/api';
+app\admin\community\anonymous\[postId]\view\page.tsx:42:    fetchApi<Detail>(`/anonymousPosts/${postId}`).then(setDetail).catch((e) => setError(e.message)).finally(() => setLoading(false));
+app\admin\community\anonymous\[postId]\view\page.tsx:51:      await fetchApi(`/anonymousPosts/${postId}/action`, { method: 'POST', body: JSON.stringify({ action: selected, reason: reason.trim() || undefined }) });
+app\admin\community\blocked\page.tsx:5:import { fetchApi } from '../../../../lib/api/api';
+app\admin\community\blocked\page.tsx:29:    fetchApi<BlockedUser[]>('/users')
+app\admin\community\blocked\page.tsx:43:      await fetchApi(`/users/${unblockTarget.id}`, {
+app\admin\community\comments\page.tsx:6:import { fetchApi } from '../../../../lib/api/api';
+app\admin\community\comments\page.tsx:34:    fetchApi<Comment[]>('/comments').then(setComments).catch(console.error).finally(() => setLoading(false));
+app\admin\community\comments\page.tsx:51:      await fetchApi(`/comments/${deleteTarget.id}`, { method: 'DELETE' });
+app\admin\community\moderation\page.tsx:6:import { fetchApi } from '../../../../lib/api/api';
+app\admin\community\moderation\page.tsx:53:      fetchApi<RawReport[]>('/reportedPosts').catch(() => [] as RawReport[]),
+app\admin\community\moderation\page.tsx:54:      fetchApi<RawReport[]>('/reportedComments').catch(() => [] as RawReport[]),
+app\admin\community\moderation\page.tsx:55:      fetchApi<RawModeration[]>('/safetyModeration').catch(() => [] as RawModeration[]),
+app\admin\community\moderation\page.tsx:109:      await fetchApi(`/${resource}/${realId}`, {
+app\admin\community\page.tsx:8:import { fetchApi } from '../../../lib/api/api';
+app\admin\community\page.tsx:42:      count(fetchApi<unknown[]>('/posts'), (a) => a.length),
+app\admin\community\page.tsx:43:      count(fetchApi<unknown[]>('/comments'), (a) => a.length),
+app\admin\community\page.tsx:44:      count(fetchApi<Record<string, unknown>[]>('/reportedPosts'), (a) => a.filter((r) => r.status === 'pending').length),
+app\admin\community\page.tsx:45:      count(fetchApi<Record<string, unknown>[]>('/reportedComments'), (a) => a.filter((r) => r.status === 'pending').length),
+app\admin\community\page.tsx:46:      // count(fetchApi<unknown[]>('/anonymousPosts'), (a) => a.length),
+app\admin\community\page.tsx:47:      // count(fetchApi<unknown[]>('/groups'), (a) => a.length),
+app\admin\community\page.tsx:48:      count(fetchApi<Record<string, unknown>[]>('/safetyModeration'), (a) => a.filter((r) => r.status === 'pending').length),
+app\admin\community\page.tsx:49:      count(fetchApi<Record<string, unknown>[]>('/users'), (a) => a.filter((u) => u.blocked === true).length),
+app\admin\community\partners\page.tsx:4:import { fetchApi } from '../../../../lib/api/api';
+app\admin\community\partners\page.tsx:25:    fetchApi<Partner[]>('/partners').then(setPartners).catch(console.error).finally(()=>setLoading(false));
+app\admin\community\posts\page.tsx:6:import { fetchApi } from '../../../../lib/api/api';
+app\admin\community\posts\page.tsx:37:    fetchApi<Post[]>('/posts').then(setPosts).catch(console.error).finally(() => setLoading(false));
+app\admin\community\posts\page.tsx:58:      await fetchApi(`/posts/${deleteTarget.id}`, { method: 'DELETE' });
+app\admin\community\posts\[id]\page.tsx:7:import { fetchApi } from '../../../../../lib/api/api';
+app\admin\community\posts\[id]\page.tsx:47:      fetchApi<Post>(`/posts/${postId}`),
+app\admin\community\posts\[id]\page.tsx:48:      fetchApi<Comment[]>('/comments').catch(() => [] as Comment[]),
+app\admin\community\posts\[id]\page.tsx:64:      await fetchApi(`/comments/${deleteComment.id}`, { method: 'DELETE' });
+app\admin\community\ReportedList.tsx:6:import { fetchApi } from '../../../lib/api/api';
+app\admin\community\ReportedList.tsx:47:    fetchApi<ReportItem[]>(`/${resource}`).then(setItems).catch(console.error).finally(() => setLoading(false));
+app\admin\community\ReportedList.tsx:71:      const updated = await fetchApi<ReportItem>(`/${resource}/${item.id}`, {
+app\admin\content\affirmations\page.tsx:4:import { fetchApi } from '../../../../lib/api/api';
+app\admin\content\affirmations\page.tsx:26:    fetchApi<Affirmation[]>('/affirmations').then(setItems).catch(console.error).finally(() => setLoading(false));
+app\admin\content\banners\page.tsx:4:import { fetchApi } from '../../../../lib/api/api';
+app\admin\content\banners\page.tsx:29:    fetchApi<Banner[]>('/banners').then(setItems).catch(console.error).finally(() => setLoading(false));
+app\admin\content\journal\page.tsx:4:import { fetchApi } from '../../../../lib/api/api';
+app\admin\content\journal\page.tsx:25:    fetchApi<JournalPrompt[]>('/journalPrompts').then(setPrompts).catch(console.error).finally(()=>setLoading(false));
+app\admin\content\tips\page.tsx:4:import { fetchApi } from '../../../../lib/api/api';
+app\admin\content\tips\page.tsx:28:    fetchApi<Tip[]>('/tips').then(setItems).catch(console.error).finally(() => setLoading(false));
+app\admin\content\wardrobe\page.tsx:4:import { fetchApi } from '../../../../lib/api/api';
+app\admin\content\wardrobe\page.tsx:24:    fetchApi<WardrobeItem[]>('/wardrobe').then(setItems).catch(console.error).finally(()=>setLoading(false));
+app\admin\content\zodiac\page.tsx:4:import { fetchApi } from '../../../../lib/api/api';
+app\admin\content\zodiac\page.tsx:28:    fetchApi<ZodiacEntry[]>('/zodiac').then(setItems).catch(console.error).finally(() => setLoading(false));
+app\admin\dashboard\page.tsx:9:import { fetchApi } from '../../../lib/api/api';
+app\admin\dashboard\page.tsx:22:        fetchApi<Record<string, any[]>>('/dashboardStats'),
+app\admin\dashboard\page.tsx:23:        fetchApi<Record<string, any[]>>('/dashboardCharts'),
+app\admin\dashboard\page.tsx:24:        fetchApi<Record<string, any[]>>('/dashboardTables')
+app\admin\events\page.tsx:4:import { fetchApi } from '../../../lib/api/api';
+app\admin\events\page.tsx:29:    fetchApi<Event[]>('/events').then(setEvents).catch(console.error).finally(() => setLoading(false));
+app\admin\finance\payments\page.tsx:4:import { fetchApi } from '../../../../lib/api/api';
+app\admin\finance\payments\page.tsx:27:    fetchApi<Payment[]>('/payments').then(setPayments).catch(console.error).finally(() => setLoading(false));
+app\admin\finance\revenue\page.tsx:4:import { fetchApi } from '../../../../lib/api/api';
+app\admin\finance\revenue\page.tsx:26:    fetchApi<Revenue[]>('/revenue').then(setData).catch(console.error).finally(() => setLoading(false));
+app\admin\finance\subscriptions\page.tsx:4:import { fetchApi } from '../../../../lib/api/api';
+app\admin\finance\subscriptions\page.tsx:28:    fetchApi<Subscription[]>('/subscriptions').then(data => setSubs(Array.isArray(data) ? data : [])).catch(console.error).finally(() => setLoading(false));
+app\admin\groups\page.tsx:4:import { fetchApi } from '../../../lib/api/api';
+app\admin\groups\page.tsx:28:    fetchApi<Group[]>('/groups').then(setGroups).catch(console.error).finally(() => setLoading(false));
+app\admin\notifications\page.tsx:4:import { fetchApi } from '../../../lib/api/api';
+app\admin\notifications\page.tsx:25:    fetchApi<Notification[]>('/notifications').then(setNotifications).catch(console.error).finally(()=>setLoading(false));
+app\admin\safety\moderation\page.tsx:4:import { fetchApi } from '../../../../lib/api/api';
+app\admin\safety\moderation\page.tsx:27:    fetchApi<ModerationItem[]>('/safetyModeration').then(setItems).catch(console.error).finally(() => setLoading(false));
+app\admin\safety\reports\page.tsx:4:import { fetchApi } from '../../../../lib/api/api';
+app\admin\safety\reports\page.tsx:29:    fetchApi<Report[]>('/safetyReports').then(setReports).catch(console.error).finally(()=>setLoading(false));
+app\admin\security\page.tsx:4:import { fetchApi } from '../../../lib/api/api';
+app\admin\security\page.tsx:30:    fetchApi<SecurityEvent[]>('/security').then(setEvents).catch(console.error).finally(() => setLoading(false));
+app\admin\settings\app\page.tsx:4:import { fetchApi } from '../../../../lib/api/api';
+app\admin\settings\app\page.tsx:21:    fetchApi<AppSettings>('/appSettings').then(setSettings).catch(console.error).finally(()=>setLoading(false));
+app\admin\settings\page.tsx:4:import { fetchApi } from '../../../lib/api/api';
+app\admin\settings\page.tsx:24:    fetchApi<Record<string, any>>('/settings')
+app\admin\settings\trackers\page.tsx:4:import { fetchApi } from '../../../../lib/api/api';
+app\admin\settings\trackers\page.tsx:24:    fetchApi<Tracker[]>('/trackers').then(setTrackers).catch(console.error).finally(()=>setLoading(false));
+app\admin\support\page.tsx:4:import { fetchApi } from '../../../lib/api/api';
+app\admin\support\page.tsx:29:    fetchApi<SupportTicket[]>('/support').then(setTickets).catch(console.error).finally(() => setLoading(false));
+app\admin\trips\page.tsx:4:import { fetchApi } from '../../../lib/api/api';
+app\admin\trips\page.tsx:30:    fetchApi<Trip[]>('/trips').then(setTrips).catch(console.error).finally(() => setLoading(false));
+app\admin\users\page.tsx:4:import { fetchApi } from '../../../lib/api/api';
+app\admin\users\page.tsx:208:                          await fetchApi(`/users/${editingUser.id}`, {
+app\admin\users\page.tsx:213:                          fetchApi<User[]>('/users').then(setUsers);
+app\admin\users\[id]\page.tsx:8:import { fetchApi } from '@/src/lib/api/api';
+app\admin\users\[id]\page.tsx:55:        const data = await fetchApi<User>(`/users/${userId}`);
+app\admin\users\[id]\page.tsx:72:      fetchApi<Record<string, unknown>>(`/users/${userId}/profile`).catch(() => null) as Promise<Record<string, unknown> | null>,
+app\admin\users\[id]\page.tsx:73:      fetchApi<Record<string, unknown>>(`/users/${userId}/personal`).catch(() => null) as Promise<Record<string, unknown> | null>,
+app\admin\users\[id]\page.tsx:108:      await fetchApi(`/users/${user.id}`, {
+app\admin\users\[id]\page.tsx:134:      const updated = await fetchApi<User>(`/users/${user.id}`, {
+app\admin\users\[id]\view\page.tsx:28:// import { fetchApi } from '@/src/lib/api/api';
+app\admin\users\[id]\view\page.tsx:369://     fetchApi<DeviceSession[]>(`/sessions?userId=${userId}`)
+app\admin\users\[id]\view\page.tsx:379://     fetchApi<LoginRecord[]>(`/loginHistory?userId=${userId}`)
+app\admin\users\[id]\view\page.tsx:1001:import { fetchApi } from '@/src/lib/api/api';
+app\admin\users\[id]\view\page.tsx:1447:        const data = await fetchApi<User>(`/users/${userId}`);
+app\admin\users\[id]\view\page.tsx:1468:          const data = await fetchApi<OverviewData>(`/users/${userId}/overview`);
+app\admin\users\[id]\view\page.tsx:1486:          const data = await fetchApi<ProfileData>(`/users/${userId}/profile`);
+app\admin\users\[id]\view\page.tsx:1504:          const data = await fetchApi<EventsData>(`/users/${userId}/events?page=${eventsPage}`);
+app\admin\users\[id]\view\page.tsx:1522:          const data = await fetchApi<CommunityData>(`/users/${userId}/community?page=${communityPage}`);
+app\admin\users\[id]\view\page.tsx:1540:          const data = await fetchApi<PersonalData>(`/users/${userId}/personal?page=${personalPage}`);
+app\admin\users\[id]\view\page.tsx:1558:          const data = await fetchApi<SecurityData>(`/users/${userId}/security`);
+app\admin\users\[id]\view\page.tsx:1576:          const data = await fetchApi<SubscriptionData>(`/users/${userId}/subscription`);
+app\admin\users\[id]\view\page.tsx:1594:          const data = await fetchApi<ActivityData>(`/users/${userId}/activity?page=${activityPage}`);
+app\admin\users\[id]\view\page.tsx:1619:      const updated = await fetchApi<User>(`/users/${user.id}`, {
+app\login\page.tsx:43:        // Persist the API token for all subsequent fetchApi calls
+lib\api\admins.ts:1:import { fetchApi } from './api';
+lib\api\admins.ts:5:  return await fetchApi<Admin[]>('/admins');
+lib\api\admins.ts:9:  return await fetchApi<Admin>(`/admins/${id}`);
+lib\api\admins.ts:19:  return await fetchApi<Admin>('/admins', {
+lib\api\admins.ts:26:  return await fetchApi<Admin>(`/admins/${id}`, {
+lib\api\admins.ts:33:  await fetchApi(`/admins/${id}`, {
+lib\api\api.ts:31:export async function fetchApi<T>(endpoint: string, options: RequestInit = {}, preserveEnvelope = false): Promise<T> {
+lib\api\auth.ts:1:import { fetchApi } from './api';
+lib\api\auth.ts:5:  return await fetchApi<Admin>('/auth/login', {
+lib\api\auth.ts:13:    return await fetchApi<Admin | null>('/auth/me');
+lib\api\auth.ts:21:  await fetchApi('/auth/logout', {
+lib\api\auth.ts:38:  return await fetchApi<Admin>('/admins', {
+lib\api\roles.ts:1:import { fetchApi } from './api';
+lib\api\roles.ts:5:  return await fetchApi<Role[]>('/roles');
+lib\api\roles.ts:9:  return await fetchApi<Role>(`/roles/${id}`);
+lib\api\roles.ts:18:  return await fetchApi<Role>('/roles', {
+lib\api\roles.ts:25:  return await fetchApi<Role>(`/roles/${id}`, {
+lib\api\roles.ts:32:  await fetchApi(`/roles/${id}`, {
+lib\api\roles.ts:38:  return await fetchApi<Permission[]>('/permissions');
+lib\api\users.ts:1:import { fetchApi } from './api';
+lib\api\users.ts:34:  return fetchApi<User[]>('/users');
+lib\api\users.ts:39:  return fetchApi<User>(`/users/${id}`);
+lib\api\users.ts:44:  return fetchApi<User>('/users', {
+lib\api\users.ts:52:  return fetchApi<User>(`/users/${id}`, {
+lib\api\users.ts:60:  return fetchApi<User>(`/users/${id}`, {
+lib\api\users.ts:68:  return fetchApi<void>(`/users/${id}`, { method: 'DELETE' });
+lib\api\users.ts:75:  return fetchApi<UserTabData>(`/users/${id}/overview`);
+lib\api\users.ts:80:  return fetchApi<UserTabData>(`/users/${id}/security`);
+lib\api\users.ts:85:  return fetchApi<UserTabData>(`/users/${id}/profile`);
+lib\api\users.ts:90:  return fetchApi<UserTabData>(`/users/${id}/subscription`);
+lib\api\users.ts:95:  return fetchApi<UserTabData>(`/users/${id}/content`);
+lib\api\users.ts:100:  return fetchApi<UserTabData>(`/users/${id}/events`);
+lib\api\users.ts:105:  return fetchApi<UserTabData>(`/users/${id}/community`);
+lib\api\users.ts:110:  return fetchApi<UserTabData>(`/users/${id}/personal`);
+lib\api\users.ts:119:  return fetchApi<UserActivityResponse>(`/users/${id}/activity`);
