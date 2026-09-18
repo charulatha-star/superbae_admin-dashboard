@@ -121,9 +121,10 @@ export default function EventsPage() {
           <Search size={16} className={styles.searchIcon} />
           <input type="text" placeholder="Search events..." value={search} onChange={e => setSearch(e.target.value)} className={styles.searchInput} />
         </div>
+
       </div>
 
-      <div className={styles.tableContainer}>
+      <div className={styles.tableContainer} style={{ overflow: "auto", scrollbarWidth: "none" }}>
         {loading ? <AdminTableSkeleton /> : paginatedData.length === 0 ? (
           <NoData title="No events" description="No events are available to display." />
         ) : (

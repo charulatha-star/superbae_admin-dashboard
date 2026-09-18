@@ -106,7 +106,15 @@ export function Navbar({ onToggleSidebar }: NavbarProps) {
             onClick={() => setShowProfileMenu(!showProfileMenu)}
           >
             <div className={styles.avatar}>
-              {admin?.name ? admin.name.charAt(0).toUpperCase() : 'U'}
+              {admin?.avatar ? (
+                <img 
+                  src={admin.avatar} 
+                  alt={admin.name || 'Avatar'} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} 
+                />
+              ) : (
+                admin?.name ? admin.name.charAt(0).toUpperCase() : 'U'
+              )}
             </div>
             <div className={styles.profileInfo}>
               <span className={styles.profileName}>{admin?.name || 'User'}</span>

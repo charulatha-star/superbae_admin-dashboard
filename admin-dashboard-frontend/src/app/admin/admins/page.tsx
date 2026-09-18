@@ -121,8 +121,16 @@ export default function AdminsPage() {
                 {paginatedData.map(admin => (
                   <tr key={admin.id}>
                     <td className={styles.nameCell}>
-                      <div className={styles.avatar}>
-                        {admin.name.charAt(0).toUpperCase()}
+                      <div className={styles.avatar} style={{ overflow: 'hidden', flexShrink: 0 }}>
+                        {admin.avatar ? (
+                          <img
+                            src={admin.avatar}
+                            alt={admin.name}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                          />
+                        ) : (
+                          admin.name.charAt(0).toUpperCase()
+                        )}
                       </div>
                       {admin.name}
                     </td>

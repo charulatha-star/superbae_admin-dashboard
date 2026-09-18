@@ -8,6 +8,7 @@ import { NoData } from '../../../components/admin/NoData/NoData';
 import { ConfirmModal } from '../../../components/admin/ConfirmModal';
 import { MapPin, Search, Edit, Trash2, Plus, Edit2 } from 'lucide-react';
 import styles from '../users/page.module.css';
+import { PermissionGate } from '@/src/components/admin/PermissionGate';
 
 interface Trip {
   id: string;
@@ -74,7 +75,11 @@ export default function TripsPage() {
           <h1 className={styles.title}>Trips</h1>
           <p className={styles.subtitle}>Manage and monitor all platform trips.</p>
         </div>
-
+        <PermissionGate permission="TRIPS_MANAGE">
+          <Link href="/admin/trips/create" className={styles.primaryBtn}>
+            <Plus size={16} /> Create Trip
+          </Link>
+        </PermissionGate>
       </div>
 
       <div className={styles.statsRow}>
@@ -93,7 +98,7 @@ export default function TripsPage() {
         ))}
       </div>
 
-      <div className={styles.toolbar} style={{ justifyContent: "space-between" }}>
+      <div className={styles.toolbar}>
         <div className={styles.searchWrapper}>
           <Search size={16} className={styles.searchIcon} />
           <input
@@ -104,9 +109,7 @@ export default function TripsPage() {
             className={styles.searchInput}
           />
         </div>
-        <Link href="/admin/trips/create" className={styles.primaryBtn}>
-          <Plus size={16} /> Create Trip
-        </Link>
+
       </div>
 
       <div className={styles.tableContainer}>

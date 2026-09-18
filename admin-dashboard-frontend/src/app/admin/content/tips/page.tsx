@@ -68,7 +68,6 @@ export default function TipsPage() {
             </div>
           </div>
         ))}
-        <div className={styles.statCard} />
       </div>
 
       <div className={styles.toolbar}>
@@ -84,40 +83,40 @@ export default function TipsPage() {
         ) : (
           <>
             <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Views</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th className={styles.actionsHeader}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedData.map(tip => (
-                <tr key={tip.id}>
-                  <td><strong>{tip.title}</strong></td>
-                  <td>{tip.category}</td>
-                  <td>{tip.views.toLocaleString()}</td>
-                  <td><ContentStatusBadge status={tip.status} scheduledAt={tip.scheduledAt} /></td>
-                  <td>{new Date(tip.createdAt).toLocaleDateString()}</td>
-                  <td className={styles.actionsCell}>
-                    <div className={styles.actionButtons}>
-                      <Link href={`/admin/content/tips/${tip.id}/view`} className={styles.iconBtn} title="View">
-                        <Eye size={16} />
-                      </Link>
-                      <PermissionGate permission="CONTENT_MANAGE">
-                        <Link href={`/admin/content/tips/${tip.id}`} className={styles.iconBtn} title="Edit">
-                          <Edit2 size={16} />
-                        </Link>
-                      </PermissionGate>
-                    </div>
-                  </td>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>Views</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th className={styles.actionsHeader}>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {paginatedData.map(tip => (
+                  <tr key={tip.id}>
+                    <td><strong>{tip.title}</strong></td>
+                    <td>{tip.category}</td>
+                    <td>{tip.views.toLocaleString()}</td>
+                    <td><ContentStatusBadge status={tip.status} scheduledAt={tip.scheduledAt} /></td>
+                    <td>{new Date(tip.createdAt).toLocaleDateString()}</td>
+                    <td className={styles.actionsCell}>
+                      <div className={styles.actionButtons}>
+                        <Link href={`/admin/content/tips/${tip.id}/view`} className={styles.iconBtn} title="View">
+                          <Eye size={16} />
+                        </Link>
+                        <PermissionGate permission="CONTENT_MANAGE">
+                          <Link href={`/admin/content/tips/${tip.id}`} className={styles.iconBtn} title="Edit">
+                            <Edit2 size={16} />
+                          </Link>
+                        </PermissionGate>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
             {totalPages > 1 && (
               <div className={styles.pagination}>
                 <button className={styles.paginationBtn} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>← Previous</button>

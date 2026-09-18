@@ -26,14 +26,14 @@ export default function EditGroupPage() {
 
   useEffect(() => {
     if (!id) return;
-    fetchApi<{ data: Group }>(`/groups/${id}`)
+    fetchApi<Group>(`/groups/${id}`)
       .then(res => {
-        if (res.data) {
+        if (res) {
           setFormData({
-            name: res.data.name || '',
-            description: res.data.description || '',
-            category: res.data.category || '',
-            status: res.data.status || 'pending',
+            name: res.name || '',
+            description: res.description || '',
+            category: res.category || '',
+            status: res.status || 'pending',
           });
         }
       })

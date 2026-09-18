@@ -124,7 +124,7 @@ export function ReportedList({ resource, title, subtitle, contentLabel }: Report
         </select>
       </div>
 
-      <div className={styles.tableContainer}>
+      <div className={styles.tableContainer} >
         {loading ? <AdminTableSkeleton /> : paginatedData.length === 0 ? (
           <NoData title="No reports found" description="No reports match your filters." />
         ) : (

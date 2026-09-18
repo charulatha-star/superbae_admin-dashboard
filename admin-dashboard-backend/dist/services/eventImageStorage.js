@@ -37,9 +37,11 @@ exports.eventImageUpload = (0, multer_1.default)({
     limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: (_req, file, callback) => {
         if (!allowedMimeTypes.has(file.mimetype)) {
+            // Use the single-argument overload to signal an error
             callback(new EventImageUploadError('Only JPEG, PNG, GIF, and WebP images are allowed.'));
             return;
         }
+        // Accept the file
         callback(null, true);
     },
 });

@@ -2,6 +2,8 @@ import express from 'express';
 import { randomUUID } from 'crypto';
 import { cleanDoc } from '../utils/clean';
 import { LooseDocument, ModelRegistry } from '../models/registry';
+import { adminAvatarUpload, adminAvatarUrl } from '../services/adminAvatarStorage';
+import { requireAuth } from '../middleware/auth';
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Unexpected error';
@@ -112,6 +114,42 @@ export function createAuthRouter(models: ModelRegistry) {
       res.status(500).json({ message: errorMessage(error) });
     }
   });
+
+  // POST /auth/me/avatar — upload profile picture for the currently logged-in admin
+  router.post(
+    '/me/avatar',
+    requireAuth,
+    adminAvatarUpload.single('avatar'),
+    async (req, res) => {
+      try {
+        if (!req.file) {
+          return res.status(400).json({ message: 'No image file provided.' });
+        }
+        const adminId = String(req.currentAdmin?.id || '');
+        if (!adminId) {
+          return res.status(401).json({ message: 'Unauthorized.' });
+        }
+
+        const avatarUrl = adminAvatarUrl(req, req.file.filename);
+
+        const updated = await models.admins
+          .findOneAndUpdate(
+            { id: adminId },
+            { $set: { avatar: avatarUrl } },
+            { new: true, lean: true }
+          )
+          .lean<LooseDocument | null>();
+
+        if (!updated) {
+          return res.status(404).json({ message: 'Admin not found.' });
+        }
+
+        res.json(stripPassword(cleanDoc(updated)));
+      } catch (error) {
+        res.status(500).json({ message: errorMessage(error) });
+      }
+    }
+  );
 
   return router;
 }

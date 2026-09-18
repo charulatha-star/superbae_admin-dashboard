@@ -5,6 +5,8 @@ import { createSingletonRouter } from '../utils/createSingletonRouter';
 import { cleanDoc } from '../utils/clean';
 import { createAuthRouter } from './auth';
 import { createAnonymousModerationRouter } from './anonymousModeration';
+import { createContentManagementRouter } from './contentManagement';
+import { createEventCrudRouter, createEventRegistrationRouter, createEventAnalyticsRouter } from './eventManagement';
 import { requireAuth } from '../middleware/auth';
 
 export function registerRoutes(app: Express): void {
@@ -832,6 +834,14 @@ export function registerRoutes(app: Express): void {
     'communityGuidelines',
     'appAnnouncements',
   ]);
+
+  // Mount custom CMS router
+  app.use('/', createContentManagementRouter(models));
+
+  // Mount custom Events routers
+  app.use('/events', createEventCrudRouter(models));
+  app.use('/events', createEventRegistrationRouter(models));
+  app.use('/events', createEventAnalyticsRouter(models));
 
   for (const resource of ARRAY_RESOURCES) {
     if (resource === 'anonymousPosts') continue;

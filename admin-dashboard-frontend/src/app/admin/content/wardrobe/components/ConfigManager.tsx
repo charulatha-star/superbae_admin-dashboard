@@ -106,7 +106,7 @@ export function ConfigManager({ resourcePath, title, itemName }: ConfigManagerPr
 
   return (
     <div className={styles.container} style={{ padding: '0', background: 'transparent' }}>
-      <div className={styles.toolbar} style={{ justifyContent: "space-between", marginTop: '0', marginBottom: "15px" }}>
+      <div className={styles.toolbar} style={{ justifyContent: "space-between", marginTop: '0' }}>
         <div className={styles.searchWrapper}>
           <Search size={16} className={styles.searchIcon} />
           <input
@@ -122,7 +122,7 @@ export function ConfigManager({ resourcePath, title, itemName }: ConfigManagerPr
         </button>
       </div>
 
-      <div className={styles.tableContainer}>
+      <div className={styles.tableContainer} style={{ marginBottom: "15px" }}>
         {loading ? <AdminTableSkeleton /> : paginatedData.length === 0 ? (
           <NoData title={`No ${title.toLowerCase()}`} description={`No ${title.toLowerCase()} configured yet.`} />
         ) : (

@@ -1,15 +1,18 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../../../hooks/useAuth';
+import { useAuth, updateSharedAdmin } from '../../../hooks/useAuth';
 import { Eye, EyeOff, Upload, User, CheckCircle } from 'lucide-react';
 import { Loader } from '../../../components/admin/Loader';
 import { Toast } from '../../../components/admin/Toast';
+import { uploadAdminAvatar, updateAdmin } from '../../../lib/api/admins';
+import { Admin } from '../../../types/admin';
 import styles from '../admins/create/page.module.css';
 
 export default function ProfilePage() {
   const { admin, loading } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [toast, setToast] = useState<{message: string, type: 'success' | 'error'} | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -26,6 +29,8 @@ export default function ProfilePage() {
     if (admin) {
       setName(admin.name);
       setEmail(admin.email);
+      // Load existing avatar from shared auth state
+      setAvatarUrl(admin.avatar || null);
     }
   }, [admin]);
 
@@ -33,31 +38,57 @@ export default function ProfilePage() {
     fileInputRef.current?.click();
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // Mock upload - create an object URL
-      const url = URL.createObjectURL(file);
-      setAvatarUrl(url);
+    if (!file) return;
+
+    // Optimistic preview
+    const previewUrl = URL.createObjectURL(file);
+    setAvatarUrl(previewUrl);
+
+    try {
+      setIsUploading(true);
+      const updatedAdmin = await uploadAdminAvatar(file);
+      // Broadcast to ALL mounted useAuth subscribers (Navbar, Sidebar, etc.)
+      updateSharedAdmin(updatedAdmin);
+      setAvatarUrl(updatedAdmin.avatar || previewUrl);
+      setToast({ message: 'Profile picture updated!', type: 'success' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Upload failed';
+      setToast({ message: msg, type: 'error' });
+      // Revert preview on failure
+      setAvatarUrl(admin?.avatar || null);
+    } finally {
+      setIsUploading(false);
+      // Reset file input so same file can be re-selected
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password && password !== confirmPassword) {
       setToast({ message: 'Passwords do not match', type: 'error' });
       return;
     }
-    
+    if (!admin) return;
+
     setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const payload: Partial<Admin> = { name, email };
+      if (password) payload.password = password;
+      const updatedAdmin = await updateAdmin(admin.id, payload);
+      // Broadcast name/email changes to all mounted components
+      updateSharedAdmin({ ...updatedAdmin, token: admin.token });
       setToast({ message: 'Profile updated successfully', type: 'success' });
       setPassword('');
       setConfirmPassword('');
-    }, 800);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Update failed';
+      setToast({ message: msg, type: 'error' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (loading || !admin) {
@@ -99,27 +130,47 @@ export default function ProfilePage() {
                   justifyContent: 'center',
                   overflow: 'hidden',
                   position: 'relative',
-                  cursor: 'pointer'
+                  cursor: isUploading ? 'wait' : 'pointer',
+                  flexShrink: 0,
                 }}
-                onClick={handleImageClick}
+                onClick={!isUploading ? handleImageClick : undefined}
               >
                 {avatarUrl ? (
-                  <img src={avatarUrl} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img 
+                    src={avatarUrl} 
+                    alt="Avatar" 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                  />
                 ) : (
                   <User size={48} color="#9ca3af" />
                 )}
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', padding: '4px' }}>
-                  <Upload size={16} color="#fff" />
+                <div style={{ 
+                  position: 'absolute', 
+                  bottom: 0, 
+                  left: 0, 
+                  right: 0, 
+                  backgroundColor: 'rgba(0,0,0,0.5)', 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  padding: '4px',
+                }}>
+                  {isUploading ? (
+                    <Loader />
+                  ) : (
+                    <Upload size={16} color="#fff" />
+                  )}
                 </div>
               </div>
               <div>
                 <p style={{ margin: 0, fontWeight: 500 }}>Upload new avatar</p>
-                <p style={{ margin: '4px 0 0 0', fontSize: '0.875rem', color: '#6b7280' }}>JPG, GIF or PNG. Max size of 2MB.</p>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.875rem', color: '#6b7280' }}>
+                  JPG, GIF, PNG or WebP. Max size of 2MB.
+                </p>
                 <input 
                   type="file" 
                   ref={fileInputRef} 
                   style={{ display: 'none' }} 
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/gif,image/webp"
                   onChange={handleImageChange}
                 />
               </div>

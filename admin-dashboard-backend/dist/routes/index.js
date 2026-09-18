@@ -7,6 +7,8 @@ const createSingletonRouter_1 = require("../utils/createSingletonRouter");
 const clean_1 = require("../utils/clean");
 const auth_1 = require("./auth");
 const anonymousModeration_1 = require("./anonymousModeration");
+const contentManagement_1 = require("./contentManagement");
+const eventManagement_1 = require("./eventManagement");
 const auth_2 = require("../middleware/auth");
 function registerRoutes(app) {
     app.use('/auth', (0, auth_1.createAuthRouter)(registry_1.models));
@@ -758,6 +760,12 @@ function registerRoutes(app) {
         'communityGuidelines',
         'appAnnouncements',
     ]);
+    // Mount custom CMS router
+    app.use('/', (0, contentManagement_1.createContentManagementRouter)(registry_1.models));
+    // Mount custom Events routers
+    app.use('/events', (0, eventManagement_1.createEventCrudRouter)(registry_1.models));
+    app.use('/events', (0, eventManagement_1.createEventRegistrationRouter)(registry_1.models));
+    app.use('/events', (0, eventManagement_1.createEventAnalyticsRouter)(registry_1.models));
     for (const resource of registry_1.ARRAY_RESOURCES) {
         if (resource === 'anonymousPosts')
             continue;

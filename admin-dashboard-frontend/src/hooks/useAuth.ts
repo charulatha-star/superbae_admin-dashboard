@@ -45,6 +45,18 @@ export function resetAuthState(): void {
   notifySubscribers();
 }
 
+/**
+ * Update the shared admin state across ALL mounted components
+ * (Navbar, Sidebar, profile page, etc.) without a page refresh.
+ *
+ * Use this whenever you mutate the admin record (e.g. avatar upload,
+ * profile name change) so every subscriber re-renders immediately.
+ */
+export function updateSharedAdmin(updatedAdmin: Admin): void {
+  sharedAdmin = updatedAdmin;
+  notifySubscribers();
+}
+
 export function useAuth() {
   const router = useRouter();
   const pathname = usePathname();

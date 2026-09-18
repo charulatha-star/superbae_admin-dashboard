@@ -43,7 +43,7 @@ export default function WardrobePage() {
           <input type="text" placeholder="Search categories..." value={search} onChange={e => setSearch(e.target.value)} className={styles.searchInput} />
         </div>
       </div>
-      <div className={styles.tableContainer}>
+      <div className={styles.tableContainer} >
         {loading ? <AdminTableSkeleton /> : paginatedData.length === 0 ? (
           <NoData title="No wardrobe items" description="No wardrobe items are available to display." />
         ) : (

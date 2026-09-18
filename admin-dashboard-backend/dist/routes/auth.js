@@ -7,6 +7,8 @@ exports.createAuthRouter = createAuthRouter;
 const express_1 = __importDefault(require("express"));
 const crypto_1 = require("crypto");
 const clean_1 = require("../utils/clean");
+const adminAvatarStorage_1 = require("../services/adminAvatarStorage");
+const auth_1 = require("../middleware/auth");
 function errorMessage(error) {
     return error instanceof Error ? error.message : 'Unexpected error';
 }
@@ -92,6 +94,29 @@ function createAuthRouter(models) {
                 await models.adminSessions.updateMany({ token, revokedAt: null }, { $set: { revokedAt: new Date() } });
             }
             res.status(204).send();
+        }
+        catch (error) {
+            res.status(500).json({ message: errorMessage(error) });
+        }
+    });
+    // POST /auth/me/avatar — upload profile picture for the currently logged-in admin
+    router.post('/me/avatar', auth_1.requireAuth, adminAvatarStorage_1.adminAvatarUpload.single('avatar'), async (req, res) => {
+        try {
+            if (!req.file) {
+                return res.status(400).json({ message: 'No image file provided.' });
+            }
+            const adminId = String(req.currentAdmin?.id || '');
+            if (!adminId) {
+                return res.status(401).json({ message: 'Unauthorized.' });
+            }
+            const avatarUrl = (0, adminAvatarStorage_1.adminAvatarUrl)(req, req.file.filename);
+            const updated = await models.admins
+                .findOneAndUpdate({ id: adminId }, { $set: { avatar: avatarUrl } }, { new: true, lean: true })
+                .lean();
+            if (!updated) {
+                return res.status(404).json({ message: 'Admin not found.' });
+            }
+            res.json(stripPassword((0, clean_1.cleanDoc)(updated)));
         }
         catch (error) {
             res.status(500).json({ message: errorMessage(error) });

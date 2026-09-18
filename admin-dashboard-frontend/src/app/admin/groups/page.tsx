@@ -8,6 +8,7 @@ import { NoData } from '../../../components/admin/NoData/NoData';
 import { ConfirmModal } from '../../../components/admin/ConfirmModal';
 import { Users, Search, Plus, Edit2, Trash2 } from 'lucide-react';
 import styles from '../users/page.module.css';
+import { PermissionGate } from '@/src/components/admin/PermissionGate';
 
 interface Group {
   id: string;
@@ -33,8 +34,8 @@ export default function GroupsPage() {
 
   const fetchGroups = () => {
     setLoading(true);
-    fetchApi<{ data: Group[] }>('/groups')
-      .then(res => setGroups(res.data || []))
+    fetchApi<Group[]>('/groups')
+      .then(res => setGroups(Array.isArray(res) ? res : []))
       .catch(console.error)
       .finally(() => setLoading(false));
   };
@@ -74,6 +75,12 @@ export default function GroupsPage() {
           <h1 className={styles.title}>Groups</h1>
           <p className={styles.subtitle}>Manage and monitor all platform groups.</p>
         </div>
+        <PermissionGate permission="GROUP_MANAGE">
+          <button className={styles.primaryBtn} onClick={() => router.push('/admin/groups/create')}>
+            <Plus size={16} />
+            Create Group
+          </button>
+        </PermissionGate>
       </div>
 
       <div className={styles.statsRow}>
@@ -107,15 +114,12 @@ export default function GroupsPage() {
         </div>
       </div>
 
-      <div className={styles.toolbar} style={{ justifyContent: "space-between" }}>
+      <div className={styles.toolbar}>
         <div className={styles.searchWrapper}>
           <Search size={16} className={styles.searchIcon} />
           <input type="text" placeholder="Search groups..." value={search} onChange={e => setSearch(e.target.value)} className={styles.searchInput} />
         </div>
-        <button className={styles.primaryBtn} onClick={() => router.push('/admin/groups/create')}>
-          <Plus size={16} />
-          Create Group
-        </button>
+
       </div>
 
       <div className={styles.tableContainer}>

@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { cleanDoc } from '../utils/clean';
@@ -35,7 +35,7 @@ export function createEventCrudRouter(models: ModelRegistry) {
   const router = express.Router();
   const permission = [requireAuth, requirePermission(EVENTS_MANAGE_PERMISSION)];
 
-  router.post('/upload-image', ...permission, eventImageUpload.single('file'), (req, res) => {
+  router.post('/upload-image', ...permission, eventImageUpload.single('file'), (req: any, res: any) => {
     if (!req.file) return res.status(400).json({ message: 'An image file is required.' });
     res.status(201).json({ imageUrl: eventImageUrl(req, req.file.filename) });
   });

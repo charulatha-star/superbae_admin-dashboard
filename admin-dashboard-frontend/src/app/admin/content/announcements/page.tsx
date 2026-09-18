@@ -67,7 +67,6 @@ export default function AnnouncementsPage() {
             </div>
           </div>
         ))}
-        <div className={styles.statCard} />
       </div>
 
       <div className={styles.toolbar}>
@@ -83,38 +82,38 @@ export default function AnnouncementsPage() {
         ) : (
           <>
             <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Severity</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th className={styles.actionsHeader}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedData.map(item => (
-                <tr key={item.id}>
-                  <td><strong>{item.title}</strong></td>
-                  <td>{item.severity}</td>
-                  <td><ContentStatusBadge status={item.status} scheduledAt={item.scheduledAt} /></td>
-                  <td>{new Date(item.createdAt).toLocaleDateString()}</td>
-                  <td className={styles.actionsCell}>
-                    <div className={styles.actionButtons}>
-                      <Link href={`/admin/content/announcements/${item.id}/view`} className={styles.iconBtn} title="View">
-                        <Eye size={16} />
-                      </Link>
-                      <PermissionGate permission="CONTENT_MANAGE">
-                        <Link href={`/admin/content/announcements/${item.id}`} className={styles.iconBtn} title="Edit">
-                          <Edit2 size={16} />
-                        </Link>
-                      </PermissionGate>
-                    </div>
-                  </td>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Severity</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th className={styles.actionsHeader}>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {paginatedData.map(item => (
+                  <tr key={item.id}>
+                    <td><strong>{item.title}</strong></td>
+                    <td>{item.severity}</td>
+                    <td><ContentStatusBadge status={item.status} scheduledAt={item.scheduledAt} /></td>
+                    <td>{new Date(item.createdAt).toLocaleDateString()}</td>
+                    <td className={styles.actionsCell}>
+                      <div className={styles.actionButtons}>
+                        <Link href={`/admin/content/announcements/${item.id}/view`} className={styles.iconBtn} title="View">
+                          <Eye size={16} />
+                        </Link>
+                        <PermissionGate permission="CONTENT_MANAGE">
+                          <Link href={`/admin/content/announcements/${item.id}`} className={styles.iconBtn} title="Edit">
+                            <Edit2 size={16} />
+                          </Link>
+                        </PermissionGate>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
             {totalPages > 1 && (
               <div className={styles.pagination}>
                 <button className={styles.paginationBtn} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>← Previous</button>
