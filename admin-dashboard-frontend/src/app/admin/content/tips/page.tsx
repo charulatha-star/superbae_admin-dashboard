@@ -9,6 +9,7 @@ import { PermissionGate } from '../../../../components/admin/PermissionGate';
 import { Edit2, Eye, Lightbulb, Plus, Search } from 'lucide-react';
 import styles from '../../users/page.module.css';
 import ContentStatusBadge from '../ContentStatusBadge';
+import { formatContentDate } from '../contentFormat';
 
 interface Tip {
   id: string;
@@ -32,9 +33,12 @@ export default function TipsPage() {
     fetchApi<Tip[]>('/tips').then(setItems).catch(console.error).finally(() => setLoading(false));
   }, []);
 
+  // Defensive: documents that don't match the schema (missing/renamed fields) must
+  // never break the list, so coerce every searched field to a string first.
+  const needle = search.toLowerCase();
   const filtered = items.filter(t =>
-    t.title.toLowerCase().includes(search.toLowerCase()) ||
-    t.category.toLowerCase().includes(search.toLowerCase())
+    String(t.title ?? '').toLowerCase().includes(needle) ||
+    String(t.category ?? '').toLowerCase().includes(needle)
   );
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
@@ -58,7 +62,7 @@ export default function TipsPage() {
         {[
           { label: 'Total Tips', value: items.length, color: '#16a34a' },
           { label: 'Published', value: items.filter(i => i.status === 'published').length, color: '#2563eb' },
-          { label: 'Total Views', value: items.reduce((s, i) => s + i.views, 0), color: '#7c3aed' },
+          { label: 'Total Views', value: items.reduce((s, i) => s + (Number(i.views) || 0), 0), color: '#7c3aed' },
         ].map(stat => (
           <div key={stat.label} className={styles.statCard}>
             <Lightbulb size={20} className={styles.statIcon} style={{ color: stat.color }} />
@@ -68,7 +72,7 @@ export default function TipsPage() {
             </div>
           </div>
         ))}
-        <div className={styles.statCard} />
+     
       </div>
 
       <div className={styles.toolbar}>
@@ -99,9 +103,9 @@ export default function TipsPage() {
                 <tr key={tip.id}>
                   <td><strong>{tip.title}</strong></td>
                   <td>{tip.category}</td>
-                  <td>{tip.views.toLocaleString()}</td>
+                  <td>{(Number(tip.views) || 0).toLocaleString()}</td>
                   <td><ContentStatusBadge status={tip.status} scheduledAt={tip.scheduledAt} /></td>
-                  <td>{new Date(tip.createdAt).toLocaleDateString()}</td>
+                  <td>{formatContentDate(tip.createdAt)}</td>
                   <td className={styles.actionsCell}>
                     <div className={styles.actionButtons}>
                       <Link href={`/admin/content/tips/${tip.id}/view`} className={styles.iconBtn} title="View">

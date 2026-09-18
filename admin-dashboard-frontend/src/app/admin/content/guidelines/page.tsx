@@ -9,6 +9,7 @@ import { PermissionGate } from '../../../../components/admin/PermissionGate';
 import { Edit2, Eye, FileText, Plus, Search } from 'lucide-react';
 import styles from '../../users/page.module.css';
 import ContentStatusBadge from '../ContentStatusBadge';
+import { formatContentDate } from '../contentFormat';
 
 interface Guideline {
   id: string;
@@ -31,9 +32,12 @@ export default function GuidelinesPage() {
     fetchApi<Guideline[]>('/communityGuidelines').then(setItems).catch(console.error).finally(() => setLoading(false));
   }, []);
 
+  // Defensive: documents that don't match the schema (missing/renamed fields) must
+  // never break the list, so coerce every searched field to a string first.
+  const needle = search.toLowerCase();
   const filtered = items.filter(g =>
-    g.title.toLowerCase().includes(search.toLowerCase()) ||
-    (g.body ?? '').toLowerCase().includes(search.toLowerCase())
+    String(g.title ?? '').toLowerCase().includes(needle) ||
+    String(g.body ?? '').toLowerCase().includes(needle)
   );
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
@@ -67,7 +71,7 @@ export default function GuidelinesPage() {
             </div>
           </div>
         ))}
-        <div className={styles.statCard} />
+     
       </div>
 
       <div className={styles.toolbar}>
@@ -98,7 +102,7 @@ export default function GuidelinesPage() {
                   <td><strong>{item.title}</strong></td>
                   <td>{item.order}</td>
                   <td><ContentStatusBadge status={item.status} scheduledAt={item.scheduledAt} /></td>
-                  <td>{new Date(item.createdAt).toLocaleDateString()}</td>
+                  <td>{formatContentDate(item.createdAt)}</td>
                   <td className={styles.actionsCell}>
                     <div className={styles.actionButtons}>
                       <Link href={`/admin/content/guidelines/${item.id}/view`} className={styles.iconBtn} title="View">

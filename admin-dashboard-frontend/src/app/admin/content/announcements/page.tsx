@@ -9,6 +9,7 @@ import { PermissionGate } from '../../../../components/admin/PermissionGate';
 import { Bell, Edit2, Eye, Plus, Search } from 'lucide-react';
 import styles from '../../users/page.module.css';
 import ContentStatusBadge from '../ContentStatusBadge';
+import { formatContentDate } from '../contentFormat';
 
 interface Announcement {
   id: string;
@@ -31,9 +32,12 @@ export default function AnnouncementsPage() {
     fetchApi<Announcement[]>('/appAnnouncements').then(setItems).catch(console.error).finally(() => setLoading(false));
   }, []);
 
+  // Defensive: documents that don't match the schema (missing/renamed fields) must
+  // never break the list, so coerce every searched field to a string first.
+  const needle = search.toLowerCase();
   const filtered = items.filter(a =>
-    a.title.toLowerCase().includes(search.toLowerCase()) ||
-    (a.body ?? '').toLowerCase().includes(search.toLowerCase())
+    String(a.title ?? '').toLowerCase().includes(needle) ||
+    String(a.body ?? '').toLowerCase().includes(needle)
   );
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
@@ -67,7 +71,7 @@ export default function AnnouncementsPage() {
             </div>
           </div>
         ))}
-        <div className={styles.statCard} />
+        
       </div>
 
       <div className={styles.toolbar}>
@@ -98,7 +102,7 @@ export default function AnnouncementsPage() {
                   <td><strong>{item.title}</strong></td>
                   <td>{item.severity}</td>
                   <td><ContentStatusBadge status={item.status} scheduledAt={item.scheduledAt} /></td>
-                  <td>{new Date(item.createdAt).toLocaleDateString()}</td>
+                  <td>{formatContentDate(item.createdAt)}</td>
                   <td className={styles.actionsCell}>
                     <div className={styles.actionButtons}>
                       <Link href={`/admin/content/announcements/${item.id}/view`} className={styles.iconBtn} title="View">

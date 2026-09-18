@@ -9,6 +9,7 @@ import { PermissionGate } from '../../../../components/admin/PermissionGate';
 import { Edit2, Eye, Cookie, Plus, Search } from 'lucide-react';
 import styles from '../../users/page.module.css';
 import ContentStatusBadge from '../ContentStatusBadge';
+import { formatContentDate } from '../contentFormat';
 
 interface FortuneCookie {
   id: string;
@@ -30,9 +31,12 @@ export default function FortunePage() {
     fetchApi<FortuneCookie[]>('/fortuneCookies').then(setItems).catch(console.error).finally(() => setLoading(false));
   }, []);
 
+  // Defensive: documents that don't match the schema (missing/renamed fields) must
+  // never break the list, so coerce every searched field to a string first.
+  const needle = search.toLowerCase();
   const filtered = items.filter(f =>
-    f.text.toLowerCase().includes(search.toLowerCase()) ||
-    (f.category ?? '').toLowerCase().includes(search.toLowerCase())
+    String(f.text ?? '').toLowerCase().includes(needle) ||
+    String(f.category ?? '').toLowerCase().includes(needle)
   );
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
@@ -66,7 +70,7 @@ export default function FortunePage() {
             </div>
           </div>
         ))}
-        <div className={styles.statCard} />
+      
       </div>
 
       <div className={styles.toolbar}>
@@ -97,7 +101,7 @@ export default function FortunePage() {
                   <td>{item.text}</td>
                   <td>{item.category}</td>
                   <td><ContentStatusBadge status={item.status} scheduledAt={item.scheduledAt} /></td>
-                  <td>{new Date(item.createdAt).toLocaleDateString()}</td>
+                  <td>{formatContentDate(item.createdAt)}</td>
                   <td className={styles.actionsCell}>
                     <div className={styles.actionButtons}>
                       <Link href={`/admin/content/fortune/${item.id}/view`} className={styles.iconBtn} title="View">

@@ -32,7 +32,8 @@ export default function ZodiacPage() {
     fetchApi<ZodiacEntry[]>('/zodiac').then(setItems).catch(console.error).finally(() => setLoading(false));
   }, []);
 
-  const filtered = items.filter(z => z.sign.toLowerCase().includes(search.toLowerCase()));
+  // Defensive: a document with a missing/renamed field must not break the list.
+  const filtered = items.filter(z => String(z.sign ?? '').toLowerCase().includes(search.toLowerCase()));
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginatedData = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);

@@ -33,9 +33,12 @@ export default function BannersPage() {
     fetchApi<Banner[]>('/banners').then(setItems).catch(console.error).finally(() => setLoading(false));
   }, []);
 
+  // Defensive: documents that don't match the schema (missing/renamed fields) must
+  // never break the list, so coerce every searched field to a string first.
+  const needle = search.toLowerCase();
   const filtered = items.filter(b =>
-    b.title.toLowerCase().includes(search.toLowerCase()) ||
-    b.placement.toLowerCase().includes(search.toLowerCase())
+    String(b.title ?? '').toLowerCase().includes(needle) ||
+    String(b.placement ?? '').toLowerCase().includes(needle)
   );
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
@@ -59,8 +62,8 @@ export default function BannersPage() {
         {[
           { label: 'Total Banners', value: items.length, color: '#0891b2' },
           { label: 'Active', value: items.filter(i => i.status === 'active').length, color: '#16a34a' },
-          { label: 'Total Clicks', value: items.reduce((s, i) => s + i.clicks, 0), color: '#7c3aed' },
-          { label: 'Total Impressions', value: items.reduce((s, i) => s + i.impressions, 0), color: '#d97706' },
+          { label: 'Total Clicks', value: items.reduce((s, i) => s + (Number(i.clicks) || 0), 0), color: '#7c3aed' },
+          { label: 'Total Impressions', value: items.reduce((s, i) => s + (Number(i.impressions) || 0), 0), color: '#d97706' },
         ].map(stat => (
           <div key={stat.label} className={styles.statCard}>
             <Image size={20} className={styles.statIcon} style={{ color: stat.color }} />
@@ -105,8 +108,8 @@ export default function BannersPage() {
                   <td><ContentStatusBadge status={banner.status} scheduledAt={banner.scheduledAt} /></td>
                   <td>{banner.startDate}</td>
                   <td>{banner.endDate}</td>
-                  <td>{banner.clicks.toLocaleString()}</td>
-                  <td>{banner.impressions.toLocaleString()}</td>
+                  <td>{(Number(banner.clicks) || 0).toLocaleString()}</td>
+                  <td>{(Number(banner.impressions) || 0).toLocaleString()}</td>
                   <td className={styles.actionsCell}>
                     <div className={styles.actionButtons}>
                       <Link href={`/admin/content/banners/${banner.id}/view`} className={styles.iconBtn} title="View">

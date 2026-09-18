@@ -29,7 +29,8 @@ export default function JournalPage(){
     fetchApi<JournalPrompt[]>('/journalPrompts').then(setPrompts).catch(console.error).finally(()=>setLoading(false));
   },[]);
 
-  const filtered=prompts.filter(p=>p.text.toLowerCase().includes(search.toLowerCase()));
+  // Defensive: a document with a missing/renamed field must not break the list.
+  const filtered=prompts.filter(p=>String(p.text ?? '').toLowerCase().includes(search.toLowerCase()));
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginatedData = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 

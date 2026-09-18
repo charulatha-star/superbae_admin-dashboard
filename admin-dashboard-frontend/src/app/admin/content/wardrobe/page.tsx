@@ -19,15 +19,20 @@ export default function WardrobePage(){
   const [items,setItems]=useState<WardrobeItem[]>([]);
   const [loading,setLoading]=useState(true);
   const [search,setSearch]=useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(()=>{
     fetchApi<WardrobeItem[]>('/wardrobe').then(setItems).catch(console.error).finally(()=>setLoading(false));
   },[]);
 
-  const filtered=items.filter(i=>i.category.toLowerCase().includes(search.toLowerCase()) || i.style.toLowerCase().includes(search.toLowerCase()));
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  // Defensive: documents that don't match the schema (missing/renamed fields) must
+  // never break the list, so coerce every searched field to a string first.
+  const needle = search.toLowerCase();
+  const filtered=items.filter(i=>
+    String(i.category ?? '').toLowerCase().includes(needle) ||
+    String(i.style ?? '').toLowerCase().includes(needle)
+  );
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginatedData = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
