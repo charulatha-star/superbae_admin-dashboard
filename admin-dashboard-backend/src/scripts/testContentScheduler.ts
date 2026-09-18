@@ -65,6 +65,7 @@ async function testContentScheduler(): Promise<void> {
     noScheduleTip: `test_sched_tip_none_${suffix}`,
     pastZodiac: `test_sched_zodiac_past_${suffix}`,
     pastFortune: `test_sched_fortune_past_${suffix}`,
+    missingScheduleTip: `test_sched_tip_missing_${suffix}`,
     event: `test_sched_event_${suffix}`,
   };
   const now = new Date();
@@ -95,6 +96,7 @@ async function testContentScheduler(): Promise<void> {
     { id: ids.pastTip, title: 'Scheduler Past Tip', body: 'Should be auto-published.', subtype: 'wellness', status: 'draft', scheduledAt: pastDate, publishedAt: null, isFeatured: false, authorId: null, createdAt: now, updatedAt: now },
     { id: ids.futureTip, title: 'Scheduler Future Tip', body: 'Must NOT be auto-published early.', subtype: 'wellness', status: 'draft', scheduledAt: futureDate, publishedAt: null, isFeatured: false, authorId: null, createdAt: now, updatedAt: now },
     { id: ids.noScheduleTip, title: 'Scheduler No Schedule Tip', body: 'Has no scheduledAt; untouched.', subtype: 'wellness', status: 'draft', scheduledAt: null, publishedAt: null, isFeatured: false, authorId: null, createdAt: now, updatedAt: now },
+    { id: ids.missingScheduleTip, title: 'Scheduler Missing Schedule Tip', body: 'scheduledAt field absent entirely; untouched.', subtype: 'wellness', status: 'draft', publishedAt: null, isFeatured: false, authorId: null, createdAt: now, updatedAt: now },
   ]);
   await models.zodiac.create({
     id: ids.pastZodiac, sign: 'Aries', date: pastDate, horoscope: 'Auto-publish cross-type check.', love: null, career: null, status: 'draft', scheduledAt: pastDate, publishedAt: null, isFeatured: false, authorId: null, createdAt: now, updatedAt: now,
@@ -106,7 +108,7 @@ async function testContentScheduler(): Promise<void> {
     id: ids.event, title: 'Scheduler Regression Event', type: 'workshop', date: new Date(now.getTime() + 2 * 60 * 60 * 1000), capacity: 50, category: 'Test', status: 'upcoming', attendees: 0, registeredCount: 0, checkedInCount: 0, description: null, location: null, imageUrl: null, host: null, organizerId: null, reminderSentAt: null, reminderConfig: { enabled: true, sendBeforeHours: 24 }, createdAt: now,
   });
 
-  const targetIds = [ids.pastTip, ids.futureTip, ids.noScheduleTip, ids.pastZodiac, ids.pastFortune];
+  const targetIds = [ids.pastTip, ids.futureTip, ids.noScheduleTip, ids.missingScheduleTip, ids.pastZodiac, ids.pastFortune];
   try {
     console.log('\n--- Run 1: past + future + no-schedule candidates ---');
     const firstRun = await processContentAutoPublish(models);
@@ -124,6 +126,8 @@ async function testContentScheduler(): Promise<void> {
     expect('future-scheduled tip NOT published early', futureTip.status === 'draft', `status=${futureTip.status}`);
     const noneTip = (await models.tips.findOne({ id: ids.noScheduleTip }).lean()) as unknown as ContentDoc;
     expect('tip without scheduledAt unaffected', noneTip.status === 'draft', `status=${noneTip.status}`);
+    const missingTip = (await models.tips.findOne({ id: ids.missingScheduleTip }).lean()) as unknown as ContentDoc;
+    expect('tip with MISSING scheduledAt field unaffected (regression: tip_005)', missingTip.status === 'draft', `status=${missingTip.status}`);
 
     console.log('\n--- Audit attribution (run 1) ---');
     const auditRun1 = await models.auditLogs.find({ targetId: { $in: targetIds } }).lean<AuditLogDoc[]>();
@@ -182,7 +186,7 @@ async function testContentScheduler(): Promise<void> {
   } finally {
     await Promise.all([
       models.auditLogs.deleteMany({ targetId: { $in: [...targetIds, ids.event] } }),
-      models.tips.deleteMany({ id: { $in: [ids.pastTip, ids.futureTip, ids.noScheduleTip] } }),
+      models.tips.deleteMany({ id: { $in: [ids.pastTip, ids.futureTip, ids.noScheduleTip, ids.missingScheduleTip] } }),
       models.zodiac.deleteMany({ id: ids.pastZodiac }),
       models.fortuneCookies.deleteMany({ id: ids.pastFortune }),
       models.events.deleteMany({ id: ids.event }),
