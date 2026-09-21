@@ -25,6 +25,9 @@
     "test:content-permissions": "npm run build && node dist/scripts/testContentPermissions.js",
     "test:content-scheduler": "npm run build && node dist/scripts/testContentScheduler.js",
     "test:cms-phase3": "npm run build && node dist/scripts/testPhase3.js",
+    "seed:trackers": "npm run build && node dist/scripts/seedTrackers.js",
+    "seed:permissions": "npm run build && node dist/scripts/seedPermissions.js",
+    "test:tracker-config": "npm run build && node dist/scripts/testTrackerConfig.js",
     "seed:anonymous-moderation": "npm run build && node dist/scripts/seedAnonymousModeration.js",
     "migrate:events": "npm run build && node dist/scripts/backfillEventFields.js"
   },

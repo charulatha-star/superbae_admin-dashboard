@@ -8,6 +8,7 @@ const clean_1 = require("../utils/clean");
 const auth_1 = require("./auth");
 const anonymousModeration_1 = require("./anonymousModeration");
 const contentManagement_1 = require("./contentManagement");
+const trackerConfig_1 = require("./trackerConfig");
 const eventManagement_1 = require("./eventManagement");
 const auth_2 = require("../middleware/auth");
 function registerRoutes(app) {
@@ -760,8 +761,30 @@ function registerRoutes(app) {
         'communityGuidelines',
         'appAnnouncements',
     ]);
+    // Tracker resources have dedicated permission-gated routes above.
+    // Skip them from the generic CRUD loop so no competing unvalidated,
+    // unaudited handler exists for the same paths.
+    const TRACKER_RESOURCES_TO_SKIP = new Set([
+        'trackers',
+        'habitTemplates',
+        'moodOptions',
+        'symptoms',
+        'periodSymptoms',
+        'medications',
+        'expenseCategories',
+        'reminderTemplates',
+    ]);
+    const TRACKER_SINGLETONS_TO_SKIP = new Set([
+        'measurementUnits',
+        'waterUnits',
+    ]);
     // Mount custom CMS router
     app.use('/', (0, contentManagement_1.createContentManagementRouter)(registry_1.models));
+    // Mount dedicated Tracker configuration router (permission-gated,
+    // validated, audited). Must be mounted BEFORE the generic loops below
+    // so tracker paths are never served by the generic CRUD/singleton
+    // routers (which have no permission, validation, or audit).
+    app.use('/', (0, trackerConfig_1.createTrackerConfigRouter)(registry_1.models));
     // Mount custom Events routers
     app.use('/events', (0, eventManagement_1.createEventCrudRouter)(registry_1.models));
     app.use('/events', (0, eventManagement_1.createEventRegistrationRouter)(registry_1.models));
@@ -771,9 +794,13 @@ function registerRoutes(app) {
             continue;
         if (CONTENT_RESOURCES_TO_SKIP.has(resource))
             continue;
+        if (TRACKER_RESOURCES_TO_SKIP.has(resource))
+            continue;
         app.use(`/${resource}`, auth_2.requireAuth, (0, createCrudRouter_1.createCrudRouter)(registry_1.models[resource], resource));
     }
     for (const resource of registry_1.SINGLETON_RESOURCES) {
+        if (TRACKER_SINGLETONS_TO_SKIP.has(resource))
+            continue;
         app.use(`/${resource}`, auth_2.requireAuth, (0, createSingletonRouter_1.createSingletonRouter)(registry_1.models[resource], resource));
     }
 }

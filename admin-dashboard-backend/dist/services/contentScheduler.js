@@ -56,15 +56,18 @@ async function processContentAutoPublish(models, now = new Date(), log = console
     for (const resource of SCHEDULABLE_RESOURCES) {
         const model = models[resource];
         const candidates = await model
-            .find({ status: 'draft', scheduledAt: { $ne: null, $lte: now } })
+            .find({ status: 'draft', scheduledAt: { $type: 'date', $lte: now } })
             .lean();
         for (const doc of candidates) {
             // Atomic claim: overlapping runs cannot both match this filter.
+            // $type:'date' is required — a bare $ne:null also matches documents
+            // where scheduledAt is MISSING entirely, which auto-published an
+            // unscheduled malformed draft (tip_005) in the live cron.
             const claimed = await model
                 .findOneAndUpdate({
                 id: doc.id,
                 status: 'draft',
-                scheduledAt: { $ne: null, $lte: now },
+                scheduledAt: { $type: 'date', $lte: now },
                 [CLAIM_FIELD]: null,
             }, { $set: { [CLAIM_FIELD]: now } }, { new: true, lean: true })
                 .lean();

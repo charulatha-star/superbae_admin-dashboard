@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.models = exports.SINGLETON_RESOURCES = exports.ARRAY_RESOURCES = void 0;
+exports.TRACKER_CATEGORIES = exports.TRACKER_TYPES = exports.models = exports.SINGLETON_RESOURCES = exports.ARRAY_RESOURCES = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 exports.ARRAY_RESOURCES = [
     'admins',
@@ -48,6 +48,13 @@ exports.ARRAY_RESOURCES = [
     'recommendationRules',
     'wardrobeReports',
     'trackers',
+    'habitTemplates',
+    'moodOptions',
+    'symptoms',
+    'periodSymptoms',
+    'medications',
+    'expenseCategories',
+    'reminderTemplates',
     'journalPrompts',
     'partners',
     'clubs',
@@ -81,6 +88,8 @@ exports.SINGLETON_RESOURCES = [
     'dashboardStats',
     'dashboardCharts',
     'dashboardTables',
+    'measurementUnits',
+    'waterUnits',
 ];
 exports.models = {};
 function toModelName(resource) {
@@ -101,6 +110,41 @@ const contentSharedFields = {
     scheduledAt: { type: Date, default: null },
     isFeatured: { type: Boolean, default: false },
     authorId: { type: String, default: null },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
+};
+/**
+ * PHASE 1 — Tracker & Wellness configuration (schemas only, no routes/UI).
+ *
+ * Lighter shared-fields object for tracker option-list collections
+ * (Habit Templates, Mood Options, Symptoms Library, Period Symptoms,
+ * Medications, Expense Categories). Deliberately NOT contentSharedFields:
+ * option lists use active/inactive + sortOrder semantics, never the
+ * CMS draft/published/scheduled publishing lifecycle.
+ *
+ * Per approved decisions: trackerType discriminator on every option item
+ * (same trick as tips.subtype / banners.type in CMS), category stays a
+ * simple free-text field (no hierarchy), metric units only, reminder
+ * templates are template-side config only (no per-user schedules).
+ */
+exports.TRACKER_TYPES = [
+    'habit',
+    'mood',
+    'water',
+    'sleep',
+    'expense',
+    'sickness',
+    'measure',
+    'period',
+    'intimacy',
+    'bmi',
+];
+exports.TRACKER_CATEGORIES = ['Wellness', 'Health', 'Finance'];
+const trackerOptionSharedFields = {
+    trackerType: { type: String, enum: [...exports.TRACKER_TYPES], required: true, index: true },
+    label: { type: String, required: true, trim: true },
+    sortOrder: { type: Number, default: 0, min: 0 },
+    isActive: { type: Boolean, default: true, index: true },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
 };
@@ -511,14 +555,91 @@ for (const resource of exports.ARRAY_RESOURCES) {
                                                                                                                                                     body: { type: String, required: true },
                                                                                                                                                     severity: { type: String, enum: ['info', 'warning', 'critical'], default: 'info' },
                                                                                                                                                 }, { strict: false, versionKey: false, id: false, collection: resource })
-                                                                                                                                                : new mongoose_1.default.Schema({
-                                                                                                                                                    id: { type: String, required: true, unique: true, index: true },
-                                                                                                                                                }, {
-                                                                                                                                                    strict: false,
-                                                                                                                                                    versionKey: false,
-                                                                                                                                                    id: false,
-                                                                                                                                                    collection: resource,
-                                                                                                                                                });
+                                                                                                                                                // ── PHASE 1: Tracker & Wellness configuration ──────────────
+                                                                                                                                                // Available Trackers: the one true parent registry (10 types).
+                                                                                                                                                // category is a simple free-text field (decision: no hierarchy).
+                                                                                                                                                // Sleep/Expense/Period/Intimacy/BMI keep bespoke per-tracker
+                                                                                                                                                // config in `config` (strict:false) — NOT forced into the
+                                                                                                                                                // generic option-list shape.
+                                                                                                                                                : resource === 'trackers'
+                                                                                                                                                    ? new mongoose_1.default.Schema({
+                                                                                                                                                        id: { type: String, required: true, unique: true, index: true },
+                                                                                                                                                        trackerType: { type: String, enum: [...exports.TRACKER_TYPES], required: true, unique: true, index: true },
+                                                                                                                                                        name: { type: String, required: true, trim: true },
+                                                                                                                                                        description: { type: String, default: null },
+                                                                                                                                                        category: { type: String, default: null },
+                                                                                                                                                        isEnabled: { type: Boolean, default: true, index: true },
+                                                                                                                                                        sortOrder: { type: Number, default: 0, min: 0 },
+                                                                                                                                                        config: { type: mongoose_1.default.Schema.Types.Mixed, default: null },
+                                                                                                                                                        createdAt: { type: Date, default: Date.now },
+                                                                                                                                                        updatedAt: { type: Date, default: Date.now },
+                                                                                                                                                    }, { strict: false, versionKey: false, id: false, collection: resource })
+                                                                                                                                                    // Habit Templates: pre-built starting points (label,
+                                                                                                                                                    // default target+unit, default repeat cycle).
+                                                                                                                                                    : resource === 'habitTemplates'
+                                                                                                                                                        ? new mongoose_1.default.Schema({
+                                                                                                                                                            id: { type: String, required: true, unique: true, index: true },
+                                                                                                                                                            ...trackerOptionSharedFields,
+                                                                                                                                                            defaultTarget: { type: Number, default: null, min: 0 },
+                                                                                                                                                            defaultUnit: { type: String, default: null },
+                                                                                                                                                            defaultRepeatCycle: {
+                                                                                                                                                                type: String,
+                                                                                                                                                                enum: ['daily', 'weekly', 'monthly', 'yearly'],
+                                                                                                                                                                default: null,
+                                                                                                                                                            },
+                                                                                                                                                        }, { strict: false, versionKey: false, id: false, collection: resource })
+                                                                                                                                                        // Mood Options: shared shape + emoji (the mood's visual identity).
+                                                                                                                                                        : resource === 'moodOptions'
+                                                                                                                                                            ? new mongoose_1.default.Schema({
+                                                                                                                                                                id: { type: String, required: true, unique: true, index: true },
+                                                                                                                                                                ...trackerOptionSharedFields,
+                                                                                                                                                                emoji: { type: String, default: null },
+                                                                                                                                                            }, { strict: false, versionKey: false, id: false, collection: resource })
+                                                                                                                                                            // Symptoms Library / Period Symptoms: shared shape + allowed
+                                                                                                                                                            // severity scale observed in mockups (Low/Moderate/Extreme).
+                                                                                                                                                            // Period Symptoms is a SEPARATE list (decision Q2).
+                                                                                                                                                            : resource === 'symptoms' || resource === 'periodSymptoms'
+                                                                                                                                                                ? new mongoose_1.default.Schema({
+                                                                                                                                                                    id: { type: String, required: true, unique: true, index: true },
+                                                                                                                                                                    ...trackerOptionSharedFields,
+                                                                                                                                                                    severityLevels: { type: [String], default: ['Low', 'Moderate', 'Extreme'] },
+                                                                                                                                                                }, { strict: false, versionKey: false, id: false, collection: resource })
+                                                                                                                                                                // Medications: IN SCOPE (decision Q3), alongside Symptoms.
+                                                                                                                                                                : resource === 'medications'
+                                                                                                                                                                    ? new mongoose_1.default.Schema({
+                                                                                                                                                                        id: { type: String, required: true, unique: true, index: true },
+                                                                                                                                                                        ...trackerOptionSharedFields,
+                                                                                                                                                                        dosage: { type: String, default: null },
+                                                                                                                                                                    }, { strict: false, versionKey: false, id: false, collection: resource })
+                                                                                                                                                                    // Expense Categories: shared shape + expenseType discriminator
+                                                                                                                                                                    // (banners.type pattern — one collection, NOT two).
+                                                                                                                                                                    // Budgets OUT OF SCOPE (decision Q8): no budget fields.
+                                                                                                                                                                    : resource === 'expenseCategories'
+                                                                                                                                                                        ? new mongoose_1.default.Schema({
+                                                                                                                                                                            id: { type: String, required: true, unique: true, index: true },
+                                                                                                                                                                            ...trackerOptionSharedFields,
+                                                                                                                                                                            expenseType: { type: String, enum: ['expense', 'income'], required: true, index: true },
+                                                                                                                                                                        }, { strict: false, versionKey: false, id: false, collection: resource })
+                                                                                                                                                                        // Reminder Templates: TEMPLATE side only. One default message
+                                                                                                                                                                        // per tracker type (decision Q6); no per-user schedules.
+                                                                                                                                                                        : resource === 'reminderTemplates'
+                                                                                                                                                                            ? new mongoose_1.default.Schema({
+                                                                                                                                                                                id: { type: String, required: true, unique: true, index: true },
+                                                                                                                                                                                trackerType: { type: String, enum: [...exports.TRACKER_TYPES], required: true, unique: true, index: true },
+                                                                                                                                                                                defaultMessage: { type: String, required: true, trim: true },
+                                                                                                                                                                                defaultCadence: { type: String, enum: ['daily', 'weekly', 'custom'], default: 'daily' },
+                                                                                                                                                                                enabledByDefault: { type: Boolean, default: false },
+                                                                                                                                                                                createdAt: { type: Date, default: Date.now },
+                                                                                                                                                                                updatedAt: { type: Date, default: Date.now },
+                                                                                                                                                                            }, { strict: false, versionKey: false, id: false, collection: resource })
+                                                                                                                                                                            : new mongoose_1.default.Schema({
+                                                                                                                                                                                id: { type: String, required: true, unique: true, index: true },
+                                                                                                                                                                            }, {
+                                                                                                                                                                                strict: false,
+                                                                                                                                                                                versionKey: false,
+                                                                                                                                                                                id: false,
+                                                                                                                                                                                collection: resource,
+                                                                                                                                                                            });
     exports.models[resource] = mongoose_1.default.model(toModelName(resource), schema);
 }
 for (const resource of exports.SINGLETON_RESOURCES) {

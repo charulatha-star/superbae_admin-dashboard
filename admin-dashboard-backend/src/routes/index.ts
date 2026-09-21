@@ -6,6 +6,7 @@ import { cleanDoc } from '../utils/clean';
 import { createAuthRouter } from './auth';
 import { createAnonymousModerationRouter } from './anonymousModeration';
 import { createContentManagementRouter } from './contentManagement';
+import { createTrackerConfigRouter } from './trackerConfig';
 import { createEventCrudRouter, createEventRegistrationRouter, createEventAnalyticsRouter } from './eventManagement';
 import { requireAuth } from '../middleware/auth';
 
@@ -835,8 +836,33 @@ export function registerRoutes(app: Express): void {
     'appAnnouncements',
   ]);
 
+  // Tracker resources have dedicated permission-gated routes above.
+  // Skip them from the generic CRUD loop so no competing unvalidated,
+  // unaudited handler exists for the same paths.
+  const TRACKER_RESOURCES_TO_SKIP = new Set([
+    'trackers',
+    'habitTemplates',
+    'moodOptions',
+    'symptoms',
+    'periodSymptoms',
+    'medications',
+    'expenseCategories',
+    'reminderTemplates',
+  ]);
+
+  const TRACKER_SINGLETONS_TO_SKIP = new Set([
+    'measurementUnits',
+    'waterUnits',
+  ]);
+
   // Mount custom CMS router
   app.use('/', createContentManagementRouter(models));
+
+  // Mount dedicated Tracker configuration router (permission-gated,
+  // validated, audited). Must be mounted BEFORE the generic loops below
+  // so tracker paths are never served by the generic CRUD/singleton
+  // routers (which have no permission, validation, or audit).
+  app.use('/', createTrackerConfigRouter(models));
 
   // Mount custom Events routers
   app.use('/events', createEventCrudRouter(models));
@@ -846,10 +872,12 @@ export function registerRoutes(app: Express): void {
   for (const resource of ARRAY_RESOURCES) {
     if (resource === 'anonymousPosts') continue;
     if (CONTENT_RESOURCES_TO_SKIP.has(resource)) continue;
+    if (TRACKER_RESOURCES_TO_SKIP.has(resource)) continue;
     app.use(`/${resource}`, requireAuth, createCrudRouter(models[resource], resource));
   }
 
   for (const resource of SINGLETON_RESOURCES) {
+    if (TRACKER_SINGLETONS_TO_SKIP.has(resource)) continue;
     app.use(`/${resource}`, requireAuth, createSingletonRouter(models[resource], resource));
   }
 }

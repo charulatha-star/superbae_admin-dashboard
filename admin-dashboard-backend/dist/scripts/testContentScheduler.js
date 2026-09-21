@@ -77,6 +77,7 @@ async function testContentScheduler() {
         noScheduleTip: `test_sched_tip_none_${suffix}`,
         pastZodiac: `test_sched_zodiac_past_${suffix}`,
         pastFortune: `test_sched_fortune_past_${suffix}`,
+        missingScheduleTip: `test_sched_tip_missing_${suffix}`,
         event: `test_sched_event_${suffix}`,
     };
     const now = new Date();
@@ -105,6 +106,7 @@ async function testContentScheduler() {
         { id: ids.pastTip, title: 'Scheduler Past Tip', body: 'Should be auto-published.', subtype: 'wellness', status: 'draft', scheduledAt: pastDate, publishedAt: null, isFeatured: false, authorId: null, createdAt: now, updatedAt: now },
         { id: ids.futureTip, title: 'Scheduler Future Tip', body: 'Must NOT be auto-published early.', subtype: 'wellness', status: 'draft', scheduledAt: futureDate, publishedAt: null, isFeatured: false, authorId: null, createdAt: now, updatedAt: now },
         { id: ids.noScheduleTip, title: 'Scheduler No Schedule Tip', body: 'Has no scheduledAt; untouched.', subtype: 'wellness', status: 'draft', scheduledAt: null, publishedAt: null, isFeatured: false, authorId: null, createdAt: now, updatedAt: now },
+        { id: ids.missingScheduleTip, title: 'Scheduler Missing Schedule Tip', body: 'scheduledAt field absent entirely; untouched.', subtype: 'wellness', status: 'draft', publishedAt: null, isFeatured: false, authorId: null, createdAt: now, updatedAt: now },
     ]);
     await registry_1.models.zodiac.create({
         id: ids.pastZodiac, sign: 'Aries', date: pastDate, horoscope: 'Auto-publish cross-type check.', love: null, career: null, status: 'draft', scheduledAt: pastDate, publishedAt: null, isFeatured: false, authorId: null, createdAt: now, updatedAt: now,
@@ -115,7 +117,7 @@ async function testContentScheduler() {
     await registry_1.models.events.create({
         id: ids.event, title: 'Scheduler Regression Event', type: 'workshop', date: new Date(now.getTime() + 2 * 60 * 60 * 1000), capacity: 50, category: 'Test', status: 'upcoming', attendees: 0, registeredCount: 0, checkedInCount: 0, description: null, location: null, imageUrl: null, host: null, organizerId: null, reminderSentAt: null, reminderConfig: { enabled: true, sendBeforeHours: 24 }, createdAt: now,
     });
-    const targetIds = [ids.pastTip, ids.futureTip, ids.noScheduleTip, ids.pastZodiac, ids.pastFortune];
+    const targetIds = [ids.pastTip, ids.futureTip, ids.noScheduleTip, ids.missingScheduleTip, ids.pastZodiac, ids.pastFortune];
     try {
         console.log('\n--- Run 1: past + future + no-schedule candidates ---');
         const firstRun = await (0, contentScheduler_1.processContentAutoPublish)(registry_1.models);
@@ -132,6 +134,8 @@ async function testContentScheduler() {
         expect('future-scheduled tip NOT published early', futureTip.status === 'draft', `status=${futureTip.status}`);
         const noneTip = (await registry_1.models.tips.findOne({ id: ids.noScheduleTip }).lean());
         expect('tip without scheduledAt unaffected', noneTip.status === 'draft', `status=${noneTip.status}`);
+        const missingTip = (await registry_1.models.tips.findOne({ id: ids.missingScheduleTip }).lean());
+        expect('tip with MISSING scheduledAt field unaffected (regression: tip_005)', missingTip.status === 'draft', `status=${missingTip.status}`);
         console.log('\n--- Audit attribution (run 1) ---');
         const auditRun1 = await registry_1.models.auditLogs.find({ targetId: { $in: targetIds } }).lean();
         const autoEntries = auditRun1.filter((e) => e.action.endsWith('.autoPublished'));
@@ -186,7 +190,7 @@ async function testContentScheduler() {
     finally {
         await Promise.all([
             registry_1.models.auditLogs.deleteMany({ targetId: { $in: [...targetIds, ids.event] } }),
-            registry_1.models.tips.deleteMany({ id: { $in: [ids.pastTip, ids.futureTip, ids.noScheduleTip] } }),
+            registry_1.models.tips.deleteMany({ id: { $in: [ids.pastTip, ids.futureTip, ids.noScheduleTip, ids.missingScheduleTip] } }),
             registry_1.models.zodiac.deleteMany({ id: ids.pastZodiac }),
             registry_1.models.fortuneCookies.deleteMany({ id: ids.pastFortune }),
             registry_1.models.events.deleteMany({ id: ids.event }),

@@ -168,6 +168,14 @@ async function seed(): Promise<void> {
         action: 'publish',
       });
     }
+    if (!data.permissions.some((permission) => permission?.id === 'TRACKER_CONFIG_MANAGE')) {
+      data.permissions.push({
+        id: 'TRACKER_CONFIG_MANAGE',
+        module: 'trackers',
+        resource: 'trackers',
+        action: 'manage',
+      });
+    }
   }
 
   if (Array.isArray((data as Record<string, unknown>).roles)) {
@@ -183,6 +191,9 @@ async function seed(): Promise<void> {
       }
       if ((isSuperAdmin || permissions.includes('*')) && !permissions.includes('CONTENT_PUBLISH') && !permissions.includes('*')) {
         role.permissions = [...permissions, 'CONTENT_PUBLISH'];
+      }
+      if ((isSuperAdmin || permissions.includes('*')) && !permissions.includes('TRACKER_CONFIG_MANAGE') && !permissions.includes('*')) {
+        role.permissions = [...permissions, 'TRACKER_CONFIG_MANAGE'];
       }
     }
   }
