@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -10,16 +10,12 @@ import { ConfirmModal } from '../../../components/admin/ConfirmModal';
 import { Toast } from '../../../components/admin/Toast';
 import { Search, Plus, Edit2, Trash2, Send } from 'lucide-react';
 import {
-  canEdit,
-  canRetry,
   canSend,
-  canSendNow,
   channelLabel,
   describeSendOutcome,
   friendlyError,
   segmentLabel,
   statusBadgeModifier,
-  statusLine,
   type NotificationRecord,
   type NotificationSendResponse,
 } from '../../../lib/notifications/helpers';
@@ -29,15 +25,15 @@ import extra from './notifications.module.css';
 
 type ToastState = { message: string; type: 'success' | 'error' | 'warning' | 'info' } | null;
 
-/** Schedule cell: canonical scheduleAt, legacy scheduledFor fallback, else —. */
+/** Schedule cell: canonical scheduleAt, legacy scheduledFor fallback, else â€”. */
 function formatSchedule(notification: NotificationRecord): string {
   const value = notification.scheduleAt ?? notification.scheduledFor;
-  if (!value) return '—';
+  if (!value) return 'â€”';
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? '—' : date.toLocaleString();
+  return Number.isNaN(date.getTime()) ? 'â€”' : date.toLocaleString();
 }
 
-/** Delivery summary under the status badge — only safe sendResult fields. */
+/** Delivery summary under the status badge â€” only safe sendResult fields. */
 function deliveryLine(notification: NotificationRecord): string {
   const result = notification.sendResult;
   if (!result) return '';
@@ -145,18 +141,16 @@ export default function NotificationsPage() {
 
       <ConfirmModal
         isOpen={!!sendTarget}
-        title={sendTarget && canRetry(sendTarget.status) ? 'Retry Delivery' : 'Send Now'}
+        title="Send Notification"
         message={
           sendTarget
-            ? canRetry(sendTarget.status)
-              ? `“${sendTarget.title}” failed to deliver. Retry sends the same notification again — no new notification is created.`
-              : `“${sendTarget.title}” will be delivered to the “${segmentLabel(options, sendTarget.segmentId ?? sendTarget.targetSegment)}” segment on every registered active device. Continue?`
+            ? `â€œ${sendTarget.title}â€ will be delivered to the â€œ${segmentLabel(options, sendTarget.segmentId ?? sendTarget.targetSegment)}â€ segment on every registered active device. Continue?`
             : ''
         }
         onConfirm={handleSend}
         onCancel={() => setSendTarget(null)}
         variant="primary"
-        confirmText={sendTarget && canRetry(sendTarget.status) ? 'Retry' : 'Send Now'}
+        confirmText="Send"
       />
 
       <div className={styles.header}>
@@ -182,7 +176,7 @@ export default function NotificationsPage() {
             className={styles.searchInput}
           />
         </div>
-        {optionsLoading && <span className={extra.hint}>Loading notification options…</span>}
+        {optionsLoading && <span className={extra.hint}>Loading notification optionsâ€¦</span>}
       </div>
 
       {optionsError && !options && (
@@ -245,44 +239,28 @@ export default function NotificationsPage() {
                           {deliveryLine(notification)}
                         </div>
                       )}
-                      <div className={extra.hint}>{statusLine(notification.status, formatSchedule(notification))}</div>
                     </td>
                     <td className={styles.actionsCell}>
                       <div className={styles.actionButtons}>
                         <PermissionGate permission="NOTIFICATION_MANAGE">
-                          {canEdit(notification.status) && (
-                            <Link
-                              href={`/admin/notifications/${notification.id}`}
+                          <Link
+                            href={`/admin/notifications/${notification.id}`}
+                            className={styles.iconBtn}
+                            title="Edit"
+                          >
+                            <Edit2 size={16} />
+                          </Link>
+                          {canSend(notification, options) && (
+                            <button
+                              type="button"
                               className={styles.iconBtn}
-                              title="Edit"
+                              title="Send"
+                              disabled={sending}
+                              onClick={() => setSendTarget(notification)}
                             >
-                              <Edit2 size={16} />
-                            </Link>
+                              <Send size={16} />
+                            </button>
                           )}
-                          {canSend(notification, options) &&
-                            (canSendNow(notification.status) ? (
-                              <button
-                                type="button"
-                                className={styles.iconBtn}
-                                title="Send Now"
-                                aria-label={`Send now: ${notification.title}`}
-                                disabled={sending}
-                                onClick={() => setSendTarget(notification)}
-                              >
-                                <Send size={16} />
-                              </button>
-                            ) : canRetry(notification.status) ? (
-                              <button
-                                type="button"
-                                className={styles.iconBtn}
-                                title="Retry"
-                                aria-label={`Retry delivery: ${notification.title}`}
-                                disabled={sending}
-                                onClick={() => setSendTarget(notification)}
-                              >
-                                <Send size={16} />
-                              </button>
-                            ) : null)}
                           <button
                             type="button"
                             className={`${styles.iconBtn} ${styles.danger}`}
@@ -305,7 +283,7 @@ export default function NotificationsPage() {
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPageSafe === 1}
                 >
-                  ← Previous
+                  â† Previous
                 </button>
                 <span className={styles.paginationText}>
                   Page {currentPageSafe} of {totalPages}
@@ -315,7 +293,7 @@ export default function NotificationsPage() {
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPageSafe === totalPages}
                 >
-                  Next →
+                  Next â†’
                 </button>
               </div>
             )}
@@ -325,5 +303,6 @@ export default function NotificationsPage() {
     </div>
   );
 }
+
 
 

@@ -11,6 +11,7 @@ const routes_1 = require("./routes");
 const testDbSync_1 = require("./services/testDbSync");
 const eventReminders_1 = require("./services/eventReminders");
 const contentScheduler_1 = require("./services/contentScheduler");
+const notificationScheduler_1 = require("./services/notificationScheduler");
 const registry_1 = require("./models/registry");
 function errorMessage(error) {
     return error instanceof Error ? error.message : 'Internal server error';
@@ -23,6 +24,9 @@ async function start() {
     // startEventReminderJob(models);
     // Phase 5: scheduled content auto-publishing (separate cron task).
     (0, contentScheduler_1.startContentScheduler)(registry_1.models);
+    // Step 6: scheduled notification dispatcher (separate cron task, every
+    // minute; hands due scheduled notifications to the Step-5 sender).
+    (0, notificationScheduler_1.startNotificationScheduler)(registry_1.models);
     const app = (0, express_1.default)();
     const port = process.env.PORT || 3001;
     app.use((0, cors_1.default)({
@@ -51,6 +55,7 @@ async function start() {
         (0, testDbSync_1.stopAutoSync)();
         (0, eventReminders_1.stopEventReminderJob)();
         (0, contentScheduler_1.stopContentScheduler)();
+        (0, notificationScheduler_1.stopNotificationScheduler)();
         await (0, testDbSync_1.closeTestDbConnection)();
         server?.close(() => {
             console.log('Server closed');
@@ -62,6 +67,7 @@ async function start() {
         (0, testDbSync_1.stopAutoSync)();
         (0, eventReminders_1.stopEventReminderJob)();
         (0, contentScheduler_1.stopContentScheduler)();
+        (0, notificationScheduler_1.stopNotificationScheduler)();
         await (0, testDbSync_1.closeTestDbConnection)();
         server?.close(() => {
             console.log('Server closed');

@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "verify:notifications": "node scripts/verify-notifications.mjs",
     "dev:api": "npm run dev --prefix backend",
     "seed": "npm run seed --prefix backend",
     "mock-api": "json-server --watch data/db.json --port 3001"

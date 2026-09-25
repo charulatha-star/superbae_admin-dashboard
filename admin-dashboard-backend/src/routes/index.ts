@@ -7,6 +7,7 @@ import { createAuthRouter } from './auth';
 import { createAnonymousModerationRouter } from './anonymousModeration';
 import { createContentManagementRouter } from './contentManagement';
 import { createTrackerConfigRouter } from './trackerConfig';
+import { createNotificationManagementRouter } from './notificationManagement';
 import { createEventCrudRouter, createEventRegistrationRouter, createEventAnalyticsRouter } from './eventManagement';
 import { requireAuth } from '../middleware/auth';
 
@@ -855,6 +856,11 @@ export function registerRoutes(app: Express): void {
     'waterUnits',
   ]);
 
+  // Notifications have a dedicated permission-gated router. Skipping the
+  // resource here guarantees the auth-only generic CRUD can NEVER bypass
+  // the NOTIFICATION_MANAGE permission on writes.
+  const NOTIFICATION_RESOURCES_TO_SKIP = new Set(['notifications']);
+
   // Mount custom CMS router
   app.use('/', createContentManagementRouter(models));
 
@@ -863,6 +869,12 @@ export function registerRoutes(app: Express): void {
   // so tracker paths are never served by the generic CRUD/singleton
   // routers (which have no permission, validation, or audit).
   app.use('/', createTrackerConfigRouter(models));
+
+  // Mount dedicated Notifications management router (permission-gated,
+  // validated, audited). Mounted BEFORE the generic loops and paired with
+  // NOTIFICATION_RESOURCES_TO_SKIP so /notifications is never served by
+  // the generic CRUD router (which has no permission or audit).
+  app.use('/', createNotificationManagementRouter(models));
 
   // Mount custom Events routers
   app.use('/events', createEventCrudRouter(models));
@@ -873,6 +885,7 @@ export function registerRoutes(app: Express): void {
     if (resource === 'anonymousPosts') continue;
     if (CONTENT_RESOURCES_TO_SKIP.has(resource)) continue;
     if (TRACKER_RESOURCES_TO_SKIP.has(resource)) continue;
+    if (NOTIFICATION_RESOURCES_TO_SKIP.has(resource)) continue;
     app.use(`/${resource}`, requireAuth, createCrudRouter(models[resource], resource));
   }
 

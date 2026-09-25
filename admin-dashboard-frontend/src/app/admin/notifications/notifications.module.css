@@ -1,0 +1,139 @@
+/* Notifications module styles (Step 9) — additive only. Everything else is
+   reused from users/page.module.css (table/badges/actions) and
+   admins/create/page.module.css (form sections). */
+
+/* Amber status badge for `scheduled` (users CSS only ships active/suspended/
+   inactive modifiers), matching .statusBadge sizing exactly. */
+.scheduledBadge {
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  background-color: var(--warning-light);
+  color: var(--warning-text);
+}
+
+/* Read-only final-status pill (edit page: `sent` is never a select). */
+.finalBadge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  background-color: var(--success-light);
+  color: var(--success-text);
+}
+
+/* Small delivery summary rendered under the status badge. */
+.delivery {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.deliveryFailed {
+  color: var(--error-text);
+}
+
+/* Persistent inline error box for load/options failures (with Retry). */
+.errorBox {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  border: 1px solid var(--error-text);
+  background-color: var(--error-light);
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.errorText {
+  color: var(--error-text);
+  font-size: 13px;
+}
+
+.warningRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.warningText {
+  color: var(--warning-text);
+  font-size: 13px;
+}
+
+.retryBtn {
+  padding: 6px 14px;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  background-color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.retryBtn:hover {
+  background-color: var(--border-light);
+}
+
+/* Capability hint under the channel select / around the Send button. */
+.hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  display: block;
+}
+
+.hintWarn {
+  color: var(--warning-text);
+}
+
+/* Send result panel on the edit page — renders only safe sendResult data
+   (counts, outcome, masked token failures). */
+.resultPanel {
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 12px;
+}
+
+.resultGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.resultLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.resultValue {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.failureList {
+  margin: 12px 0 0;
+  padding-left: 18px;
+}
+
+.failureItem {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* Delivery section row (Send button / capability note). */
+.deliveryRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}

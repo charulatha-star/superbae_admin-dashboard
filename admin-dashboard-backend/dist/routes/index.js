@@ -9,6 +9,7 @@ const auth_1 = require("./auth");
 const anonymousModeration_1 = require("./anonymousModeration");
 const contentManagement_1 = require("./contentManagement");
 const trackerConfig_1 = require("./trackerConfig");
+const notificationManagement_1 = require("./notificationManagement");
 const eventManagement_1 = require("./eventManagement");
 const auth_2 = require("../middleware/auth");
 function registerRoutes(app) {
@@ -778,6 +779,10 @@ function registerRoutes(app) {
         'measurementUnits',
         'waterUnits',
     ]);
+    // Notifications have a dedicated permission-gated router. Skipping the
+    // resource here guarantees the auth-only generic CRUD can NEVER bypass
+    // the NOTIFICATION_MANAGE permission on writes.
+    const NOTIFICATION_RESOURCES_TO_SKIP = new Set(['notifications']);
     // Mount custom CMS router
     app.use('/', (0, contentManagement_1.createContentManagementRouter)(registry_1.models));
     // Mount dedicated Tracker configuration router (permission-gated,
@@ -785,6 +790,11 @@ function registerRoutes(app) {
     // so tracker paths are never served by the generic CRUD/singleton
     // routers (which have no permission, validation, or audit).
     app.use('/', (0, trackerConfig_1.createTrackerConfigRouter)(registry_1.models));
+    // Mount dedicated Notifications management router (permission-gated,
+    // validated, audited). Mounted BEFORE the generic loops and paired with
+    // NOTIFICATION_RESOURCES_TO_SKIP so /notifications is never served by
+    // the generic CRUD router (which has no permission or audit).
+    app.use('/', (0, notificationManagement_1.createNotificationManagementRouter)(registry_1.models));
     // Mount custom Events routers
     app.use('/events', (0, eventManagement_1.createEventCrudRouter)(registry_1.models));
     app.use('/events', (0, eventManagement_1.createEventRegistrationRouter)(registry_1.models));
@@ -795,6 +805,8 @@ function registerRoutes(app) {
         if (CONTENT_RESOURCES_TO_SKIP.has(resource))
             continue;
         if (TRACKER_RESOURCES_TO_SKIP.has(resource))
+            continue;
+        if (NOTIFICATION_RESOURCES_TO_SKIP.has(resource))
             continue;
         app.use(`/${resource}`, auth_2.requireAuth, (0, createCrudRouter_1.createCrudRouter)(registry_1.models[resource], resource));
     }

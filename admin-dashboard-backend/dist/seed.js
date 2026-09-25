@@ -157,6 +157,14 @@ async function seed() {
                 action: 'manage',
             });
         }
+        if (!data.permissions.some((permission) => permission?.id === 'NOTIFICATION_MANAGE')) {
+            data.permissions.push({
+                id: 'NOTIFICATION_MANAGE',
+                module: 'notifications',
+                resource: 'notifications',
+                action: 'manage',
+            });
+        }
     }
     if (Array.isArray(data.roles)) {
         const roles = data.roles;
@@ -174,6 +182,9 @@ async function seed() {
             }
             if ((isSuperAdmin || permissions.includes('*')) && !permissions.includes('TRACKER_CONFIG_MANAGE') && !permissions.includes('*')) {
                 role.permissions = [...permissions, 'TRACKER_CONFIG_MANAGE'];
+            }
+            if ((isSuperAdmin || permissions.includes('*')) && !permissions.includes('NOTIFICATION_MANAGE') && !permissions.includes('*')) {
+                role.permissions = [...permissions, 'NOTIFICATION_MANAGE'];
             }
         }
     }

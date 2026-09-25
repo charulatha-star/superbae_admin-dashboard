@@ -28,6 +28,23 @@ export function clearAuthToken(): void {
   sessionStorage.removeItem(TOKEN_KEY);
 }
 
+/**
+ * Error thrown for non-2xx responses. Carries the HTTP status so callers can
+ * distinguish validation (400), permission (403), missing (404), conflict
+ * (409) and server (500) failures. `.message` still holds the backend's
+ * user-facing message, so existing catch blocks that only read `.message`
+ * keep working unchanged.
+ */
+export class ApiError extends Error {
+  readonly status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+  }
+}
+
 export async function fetchApi<T>(endpoint: string, options: RequestInit = {}, preserveEnvelope = false): Promise<T> {
   const url = `${getApiBaseUrl()}${endpoint}`;
   const token = getAuthToken();
@@ -45,7 +62,7 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}, p
     clearAuthToken();
     sessionStorage.removeItem('admin');
     window.location.href = '/login';
-    throw new Error('Session expired. Please log in again.');
+    throw new ApiError('Session expired. Please log in again.', 401);
   }
 
   if (!response.ok) {
@@ -57,7 +74,7 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}, p
       // ignore JSON parse errors
     }
 
-    throw new Error(message);
+    throw new ApiError(message, response.status);
   }
 
   // DELETE may return empty body in some cases

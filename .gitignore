@@ -36,3 +36,6 @@ README_BACKEND_FIXES.md
 PROJECT_COMPLETION.md
 TEST_RESULTS.md
 test-auth-fixed.ps1
+
+
+secrets/

@@ -24,32 +24,40 @@ const TRACKER_CONFIG_MANAGE: LooseDocument = {
   action: 'manage',
 };
 
-async function seedPermissions(): Promise<void> {
-  await connectDB();
-  console.log('Seeding permissions (idempotent, add-only)...');
+const NOTIFICATION_MANAGE: LooseDocument = {
+  id: 'NOTIFICATION_MANAGE',
+  module: 'notifications',
+  resource: 'notifications',
+  action: 'manage',
+};
 
-  // -- 1. Permission document ------------------------------------------------
+const SEED_PERMISSIONS: LooseDocument[] = [TRACKER_CONFIG_MANAGE, NOTIFICATION_MANAGE];
+
+async function seedPermissionDocument(permission: LooseDocument): Promise<void> {
+  // -- Permission document ---------------------------------------------------
   const existing = await models.permissions
-    .findOne({ id: TRACKER_CONFIG_MANAGE.id })
+    .findOne({ id: permission.id })
     .lean<LooseDocument | null>();
 
   if (existing) {
-    console.log(`${String(TRACKER_CONFIG_MANAGE.id)}: already present, skipping (no overwrite).`);
+    console.log(`${String(permission.id)}: already present, skipping (no overwrite).`);
   } else {
     try {
-      await models.permissions.create(TRACKER_CONFIG_MANAGE);
-      console.log(`${String(TRACKER_CONFIG_MANAGE.id)}: created.`);
+      await models.permissions.create(permission);
+      console.log(`${String(permission.id)}: created.`);
     } catch (err: unknown) {
       // 11000 = duplicate key: another run created it concurrently. Safe to ignore.
       if ((err as { code?: number })?.code === 11000) {
-        console.log(`${String(TRACKER_CONFIG_MANAGE.id)}: already present (duplicate key), skipping.`);
+        console.log(`${String(permission.id)}: already present (duplicate key), skipping.`);
       } else {
         throw err;
       }
     }
   }
+}
 
-  // -- 2. Roles: only grant where the permission model expects it ------------
+async function seedRoleGrant(permissionId: string): Promise<void> {
+  // -- Roles: only grant where the permission model expects it ------------
   // Same condition as seed.ts: a role qualifies when it is the super admin role
   // or already carries '*'. Roles that already hold '*' are skipped so the
   // wildcard behaviour is completely unchanged.
@@ -65,31 +73,42 @@ async function seedPermissions(): Promise<void> {
       wildcardUntouched++;
       continue; // '*' already grants the new permission — do not write.
     }
-    if (permissions.includes(String(TRACKER_CONFIG_MANAGE.id))) {
+    if (permissions.includes(permissionId)) {
       console.log(`role ${String(role.id)}: permission already present, skipping.`);
       continue;
     }
     // $addToSet is idempotent and cannot duplicate an existing entry.
     await models.roles.updateOne(
       { id: role.id },
-      { $addToSet: { permissions: String(TRACKER_CONFIG_MANAGE.id) } }
+      { $addToSet: { permissions: permissionId } }
     );
     granted++;
-    console.log(`role ${String(role.id)}: granted ${String(TRACKER_CONFIG_MANAGE.id)}.`);
+    console.log(`role ${String(role.id)}: granted ${permissionId}.`);
   }
-  console.log(`roles: ${granted} updated, ${wildcardUntouched} left unchanged ('*' wildcard).`);
+  console.log(`roles: ${granted} updated, ${wildcardUntouched} left unchanged ('*' wildcard) for ${permissionId}.`);
+}
 
-  // -- 3. Verification ------------------------------------------------------
-  const permCount = await models.permissions
-    .countDocuments({ id: TRACKER_CONFIG_MANAGE.id });
-  console.log(`VERIFY ${String(TRACKER_CONFIG_MANAGE.id)} exists: ${permCount === 1 ? 'yes' : 'NO'}`);
-  console.log(`VERIFY duplicate permission documents: ${permCount > 1 ? permCount : 0}`);
-  const trackerCount = await models.trackers.countDocuments();
-  console.log(`VERIFY trackers untouched: ${trackerCount} document(s).`);
+async function seedPermissions(): Promise<void> {
+  await connectDB();
+  console.log('Seeding permissions (idempotent, add-only)...');
+
+  for (const permission of SEED_PERMISSIONS) {
+    await seedPermissionDocument(permission);
+    await seedRoleGrant(String(permission.id));
+  }
+
+  // -- Verification ---------------------------------------------------------
+  for (const permission of SEED_PERMISSIONS) {
+    const permCount = await models.permissions
+      .countDocuments({ id: permission.id });
+    console.log(`VERIFY ${String(permission.id)} exists: ${permCount === 1 ? 'yes' : 'NO'}`);
+    console.log(`VERIFY duplicate permission documents: ${permCount > 1 ? permCount : 0}`);
+  }
   console.log('=== Permission seeding complete ===');
 
   await mongoose.disconnect();
 }
+
 
 seedPermissions().catch((error: unknown) => {
   console.error('Permission seed failed:', error);

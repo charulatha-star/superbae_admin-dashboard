@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
@@ -10,7 +10,6 @@ import { Toast } from '../../../../components/admin/Toast';
 import { PermissionGate } from '../../../../components/admin/PermissionGate';
 import { ConfirmModal } from '../../../../components/admin/ConfirmModal';
 import {
-  canRetry,
   canSend,
   channelLabel,
   describeSendOutcome,
@@ -221,16 +220,12 @@ export default function EditNotificationPage() {
 
       <ConfirmModal
         isOpen={sendConfirm}
-        title={canRetry(status) ? 'Retry Delivery' : 'Send Now'}
-        message={
-          canRetry(status)
-            ? `“${title}” failed to deliver. Retry sends the same notification again — no new notification is created.`
-            : `“${title}” will be delivered to the “${segmentLabel(options, segmentId)}” segment on every registered active device. Continue?`
-        }
+        title="Send Notification"
+        message={`â€œ${title}â€ will be delivered to the â€œ${segmentLabel(options, segmentId)}â€ segment on every registered active device. Continue?`}
         onConfirm={handleSend}
         onCancel={() => setSendConfirm(false)}
         variant="primary"
-        confirmText={canRetry(status) ? 'Retry' : 'Send Now'}
+        confirmText="Send"
       />
 
       <div className={styles.header}>
@@ -296,15 +291,15 @@ export default function EditNotificationPage() {
                       <option key={value} value={value}>
                         {channelLabel(value)}
                         {options && !options.sendableChannels.includes(value)
-                          ? ' (record only — sending not implemented)'
+                          ? ' (record only â€” sending not implemented)'
                           : ''}
                       </option>
                     ))}
                   </select>
-                  {optionsLoading && <span className={extra.hint}>Loading channels…</span>}
+                  {optionsLoading && <span className={extra.hint}>Loading channelsâ€¦</span>}
                   {options && !channelSendable && (
                     <span className={`${extra.hint} ${extra.hintWarn}`}>
-                      {channelLabel(channel)} delivery is not implemented yet — Send stays unavailable for this record.
+                      {channelLabel(channel)} delivery is not implemented yet â€” Send stays unavailable for this record.
                     </span>
                   )}
                 </div>
@@ -339,7 +334,7 @@ export default function EditNotificationPage() {
                       </option>
                     ))}
                   </select>
-                  {optionsLoading && <span className={extra.hint}>Loading segments…</span>}
+                  {optionsLoading && <span className={extra.hint}>Loading segmentsâ€¦</span>}
                 </div>
 
                 <div className={styles.field}>
@@ -364,7 +359,7 @@ export default function EditNotificationPage() {
                   {statusReadOnly ? (
                     <div className={extra.deliveryRow}>
                       <span className={extra.finalBadge}>{status}</span>
-                      <span className={extra.hint}>Sent is final — the delivery result below is recorded history.</span>
+                      <span className={extra.hint}>Sent is final â€” the delivery result below is recorded history.</span>
                     </div>
                   ) : (
                     <>
@@ -383,7 +378,7 @@ export default function EditNotificationPage() {
                           </option>
                         ))}
                       </select>
-                      {optionsLoading && <span className={extra.hint}>Loading status options…</span>}
+                      {optionsLoading && <span className={extra.hint}>Loading status optionsâ€¦</span>}
                       {!optionsLoading && !options && (
                         <span className={extra.hint}>Only the current status is available until options load.</span>
                       )}
@@ -408,8 +403,7 @@ export default function EditNotificationPage() {
                         <Loader />
                       ) : (
                         <>
-                          <Send size={16} style={{ marginRight: '8px' }} />{' '}
-                          {canRetry(status) ? 'Retry' : 'Send Now'}
+                          <Send size={16} style={{ marginRight: '8px' }} /> Send now
                         </>
                       )}
                     </button>
@@ -419,16 +413,14 @@ export default function EditNotificationPage() {
                     className={`${extra.hint} ${statusReadOnly || channelSendable || !options ? '' : extra.hintWarn}`}
                   >
                     {statusReadOnly
-                      ? 'This notification has already been sent — no further sends are possible.'
-                      : status === 'scheduled'
-                        ? 'Scheduled — the backend scheduler delivers this automatically at the scheduled time.'
-                        : options
-                          ? `${channelLabel(channel)} delivery is not implemented yet.`
-                          : 'Send becomes available once notification options have loaded.'}
+                      ? 'This notification has already been sent â€” no further sends are possible.'
+                      : options
+                        ? `${channelLabel(channel)} delivery is not implemented yet.`
+                        : 'Send becomes available once notification options have loaded.'}
                   </span>
                 )}
                 {status === 'failed' && options && channelSendable && (
-                  <span className={extra.hint}>Previous delivery failed — use Send to retry.</span>
+                  <span className={extra.hint}>Previous delivery failed â€” use Send to retry.</span>
                 )}
               </div>
 
@@ -437,7 +429,7 @@ export default function EditNotificationPage() {
                   <div className={extra.resultGrid}>
                     <div>
                       <div className={extra.resultLabel}>Outcome</div>
-                      <div className={extra.resultValue}>{notification.sendResult.outcome ?? '—'}</div>
+                      <div className={extra.resultValue}>{notification.sendResult.outcome ?? 'â€”'}</div>
                     </div>
                     <div>
                       <div className={extra.resultLabel}>Targeted</div>
@@ -454,7 +446,7 @@ export default function EditNotificationPage() {
                     <div>
                       <div className={extra.resultLabel}>Sent at</div>
                       <div className={extra.resultValue}>
-                        {notification.sentAt ? new Date(notification.sentAt).toLocaleString() : '—'}
+                        {notification.sentAt ? new Date(notification.sentAt).toLocaleString() : 'â€”'}
                       </div>
                     </div>
                   </div>
@@ -462,7 +454,7 @@ export default function EditNotificationPage() {
                     <ul className={extra.failureList}>
                       {notification.sendResult.failures.map((failure, index) => (
                         <li key={`${failure.tokenMask ?? 'device'}-${index}`} className={extra.failureItem}>
-                          {failure.code ?? 'error'}: {failure.message ?? 'Delivery failed'} — device{' '}
+                          {failure.code ?? 'error'}: {failure.message ?? 'Delivery failed'} â€” device{' '}
                           {failure.tokenMask ?? 'unknown'}
                         </li>
                       ))}
@@ -492,6 +484,7 @@ export default function EditNotificationPage() {
     </div>
   );
 }
+
 
 
 

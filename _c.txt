@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -29,7 +29,7 @@ export default function CreateNotificationPage() {
 
   const { options, loading: optionsLoading, error: optionsError, retry: retryOptions } = useNotificationOptions();
 
-  // The vocabulary comes from GET /notifications/options — never hard-coded.
+  // The vocabulary comes from GET /notifications/options â€” never hard-coded.
   // Until it loads (or if it fails) the select simply shows the current
   // value, which stays valid because it matches the backend defaults.
   const channelValues = options?.channels.length ? options.channels : [channel];
@@ -149,15 +149,15 @@ export default function CreateNotificationPage() {
                       <option key={value} value={value}>
                         {channelLabel(value)}
                         {options && !options.sendableChannels.includes(value)
-                          ? ' (record only — sending not implemented)'
+                          ? ' (record only â€” sending not implemented)'
                           : ''}
                       </option>
                     ))}
                   </select>
-                  {optionsLoading && <span className={extra.hint}>Loading channels…</span>}
+                  {optionsLoading && <span className={extra.hint}>Loading channelsâ€¦</span>}
                   {options && !channelSendable && (
                     <span className={`${extra.hint} ${extra.hintWarn}`}>
-                      {channelLabel(channel)} delivery is not implemented yet — you can save this record, but Send will
+                      {channelLabel(channel)} delivery is not implemented yet â€” you can save this record, but Send will
                       be unavailable.
                     </span>
                   )}
@@ -196,7 +196,7 @@ export default function CreateNotificationPage() {
                       </option>
                     ))}
                   </select>
-                  {optionsLoading && <span className={extra.hint}>Loading segments…</span>}
+                  {optionsLoading && <span className={extra.hint}>Loading segmentsâ€¦</span>}
                 </div>
 
                 <div className={styles.field}>
@@ -214,7 +214,7 @@ export default function CreateNotificationPage() {
                     <span className={styles.errorText}>{scheduleError}</span>
                   ) : (
                     <span className={extra.hint}>
-                      Leave blank to save as a draft, or pick a future time — the status becomes Scheduled and the
+                      Leave blank to save as a draft, or pick a future time â€” the status becomes Scheduled and the
                       backend dispatcher delivers it at that time.
                     </span>
                   )}
@@ -242,5 +242,6 @@ export default function CreateNotificationPage() {
     </div>
   );
 }
+
 
 

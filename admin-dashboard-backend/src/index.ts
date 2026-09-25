@@ -8,6 +8,7 @@ import { registerRoutes } from './routes';
 import { startAutoSync, stopAutoSync, closeTestDbConnection } from './services/testDbSync';
 import { startEventReminderJob, stopEventReminderJob } from './services/eventReminders';
 import { startContentScheduler, stopContentScheduler } from './services/contentScheduler';
+import { startNotificationScheduler, stopNotificationScheduler } from './services/notificationScheduler';
 import { models } from './models/registry';
 
 function errorMessage(error: unknown): string {
@@ -25,6 +26,10 @@ async function start(): Promise<void> {
 
   // Phase 5: scheduled content auto-publishing (separate cron task).
   startContentScheduler(models);
+
+  // Step 6: scheduled notification dispatcher (separate cron task, every
+  // minute; hands due scheduled notifications to the Step-5 sender).
+  startNotificationScheduler(models);
 
   const app = express();
   const port = process.env.PORT || 3001;
@@ -62,6 +67,7 @@ async function start(): Promise<void> {
     stopAutoSync();
     stopEventReminderJob();
     stopContentScheduler();
+    stopNotificationScheduler();
     await closeTestDbConnection();
     server?.close(() => {
       console.log('Server closed');
@@ -74,6 +80,7 @@ async function start(): Promise<void> {
     stopAutoSync();
     stopEventReminderJob();
     stopContentScheduler();
+    stopNotificationScheduler();
     await closeTestDbConnection();
     server?.close(() => {
       console.log('Server closed');
